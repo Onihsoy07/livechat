@@ -22,11 +22,12 @@ public class Message extends Base {
     @Column(nullable = false, unique = false)
     private String contents;
 
-    @Column(nullable = true, unique = false)
-    private MultipartFile multipartFile;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "message_group_id")
+    private MessageGroup messageGroup;
 
 }
