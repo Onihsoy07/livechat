@@ -5,9 +5,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -21,13 +18,5 @@ public class Member extends Base {
 
     @Column(nullable = false, unique = true)
     private String username;
-
-    //아래 연관 관계로 자동 양방향 매핑이 되어 테스트용으로 추가
-    @Column(nullable = true, unique = false)
-    private List<Long> messageGroupIdList = new ArrayList<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "message_group")
-    private List<MessageGroup> messageGroupList;
 
 }
