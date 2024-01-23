@@ -2,6 +2,7 @@ package com.example.livechat.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,4 +20,8 @@ public class Member extends Base {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Builder
+    public Member(String username) {
+        this.username = username;
+    }
 }
