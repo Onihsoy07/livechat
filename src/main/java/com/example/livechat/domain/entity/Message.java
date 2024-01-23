@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,9 +23,12 @@ public class Message extends Base {
     @Column(nullable = false, unique = false)
     private String contents;
 
+    @Column(nullable = true, unique = false)
+    private List<Long> viewerMemberList = new ArrayList<>();
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member sender;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "message_group_id")
