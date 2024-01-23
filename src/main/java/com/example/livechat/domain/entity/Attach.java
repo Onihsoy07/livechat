@@ -23,7 +23,7 @@ public class Attach extends Base {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member sender;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "message_group_id")
