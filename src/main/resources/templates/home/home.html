@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="kr"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: header(~{::title})}">
+    <title>HOME</title>
+</head>
+<body>
+    <div style="display: flex;">
+        <div style="margin: 10px auto; font-size: 50px;">LIVE CHAT</div>
+    </div>
+
+    <div style="display: flex; flex-direction: column;">
+        <div style="margin: 0 auto;">
+            회원생성
+        </div>
+        <div style="margin: 0 auto;">
+            <input style="margin: 10px auto;" type="text" placeholder="username" />
+            <button type="button">생성</button>
+        </div>
+    </div>
+
+</body>
+</html>
