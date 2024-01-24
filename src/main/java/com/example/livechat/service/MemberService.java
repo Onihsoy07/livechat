@@ -23,4 +23,12 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    /**
+     * 중복 username 있을 떄 return true
+     * 중복 username 없을 떄 return false
+     */
+    public Boolean duplicateUsernameCheck(String username) {
+        return !memberRepository.findByUsername(username).isEmpty();
+    }
+
 }
