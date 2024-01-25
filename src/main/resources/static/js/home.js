@@ -11,7 +11,16 @@ $(function() {
             dataType: "json",
             data: JSON.stringify(data),
         }).done(function(res) {
-            console.log(res);
+            if (res.success) {
+                alert(res.message);
+                return;
+            } else {
+                if (res.message === "Valid error") {
+                    alert(res.data.defaultMessage);
+                    return;
+                }
+                alert(res.message);
+            }
         }).fail(function(err) {
             console.log(err);
             alert(err.responseText);
