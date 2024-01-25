@@ -27,7 +27,7 @@ public class MemberApiController {
                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ObjectError error = bindingResult.getAllErrors().get(0);
-            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "바인딩 데이터 검증 에러", error);
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "Valid error", error);
         }
 
         if (memberService.duplicateUsernameCheck(memberSaveDto.getUsername())) {
