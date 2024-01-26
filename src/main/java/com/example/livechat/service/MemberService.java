@@ -1,5 +1,6 @@
 package com.example.livechat.service;
 
+import com.example.livechat.domain.dto.MemberDto;
 import com.example.livechat.domain.dto.MemberSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.repository.MemberRepository;
@@ -30,6 +31,17 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Boolean duplicateUsernameCheck(String username) {
         return !memberRepository.findByUsername(username).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDto getMember(String username) {
+        return new MemberDto(getMemberByUsername(username));
+    }
+
+    private Member getMemberByUsername(String username) {
+        return memberRepository.findByUsername(username).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Member username %s로 찾을 수 없습니다.", username));
+        });
     }
 
 }
