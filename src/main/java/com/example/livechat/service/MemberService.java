@@ -27,6 +27,7 @@ public class MemberService {
      * 중복 username 있을 떄 return true
      * 중복 username 없을 떄 return false
      */
+    @Transactional(readOnly = true)
     public Boolean duplicateUsernameCheck(String username) {
         return !memberRepository.findByUsername(username).isEmpty();
     }
