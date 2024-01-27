@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="kr"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/header :: header(~{::title})}">
+    <title>CHAT-HOME</title>
+</head>
+<body>
+    <div th:text="${memberDto.username}"></div>
+</body>
+</html>

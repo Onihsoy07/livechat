@@ -27,5 +27,11 @@ $(function() {
         });
     });
 
+    $("#btn-enter-member").click(function() {
+        const username = $('#username-input-enter').val();
+        const goUrl = window.location.href + "members/" + username;
+        window.location.replace(goUrl);
+    });
+
 
 });
