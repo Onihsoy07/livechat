@@ -1,5 +1,6 @@
 package com.example.livechat.domain.entity;
 
+import com.example.livechat.domain.enumerate.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,8 +21,19 @@ public class Member extends Base {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @Column(nullable = false, unique = true)
+    private String password;
+
+    @Column(nullable = false, unique = false)
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
     @Builder
-    public Member(String username) {
+    public Member(Long id, String username, String password, Role role) {
+        this.id = id;
         this.username = username;
+        this.password = password;
+        this.role = role;
     }
+
 }
