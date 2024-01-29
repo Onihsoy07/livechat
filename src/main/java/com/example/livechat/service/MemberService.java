@@ -3,9 +3,11 @@ package com.example.livechat.service;
 import com.example.livechat.domain.dto.MemberDto;
 import com.example.livechat.domain.dto.MemberSaveDto;
 import com.example.livechat.domain.entity.Member;
+import com.example.livechat.domain.enumerate.Role;
 import com.example.livechat.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void saveMember(MemberSaveDto memberSaveDto) {
         Member member = Member.builder()
                 .username(memberSaveDto.getUsername())
+                .password(bCryptPasswordEncoder.encode(memberSaveDto.getPassword()))
+                .role(Role.USER)
                 .build();
+
         memberRepository.save(member);
     }
 
