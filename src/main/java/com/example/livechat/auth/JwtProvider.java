@@ -1,46 +1,73 @@
 package com.example.livechat.auth;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.livechat.domain.constant.JwtVo;
 import com.example.livechat.domain.entity.Member;
-import com.example.livechat.domain.enumerate.Role;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class JwtProvider {
 
-    // 토큰 생성
-    public static String create(PrincipalDetails principal) {
-        String jwtToken = JWT.create()
-                .withSubject("bank")
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtVo.EXPIRATION_TIME))
-                .withClaim("id", principal.getMember().getId())
-                .withClaim("role", principal.getMember().getRole() + "")
-                .sign(Algorithm.HMAC512(JwtVo.SECRET));
-        return JwtVo.TOKEN_PREFIX + jwtToken;
+    private static final String AUTHORITIES_KEY = "auth";
+
+    public String createToken(Authentication authentication) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+        Date validity = new Date(now + JwtVo.EXPIRATION_TIME);
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(SignatureAlgorithm.HS512, JwtVo.SECRET)
+                .setExpiration(validity)
+                .compact();
     }
 
-
-    // 토큰 검증
-    // return 되는 PrincipalDetails 객체를 강제로 시큐리티 세션에 직접 주입할 예정
-    public static PrincipalDetails verify(String token) {
-        // 시크릿 복호화
-        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(JwtVo.SECRET))
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(JwtVo.SECRET)
                 .build()
-                .verify(token);
+                .parseClaimsJws(token)
+                .getBody();
 
-        Long id = decodedJWT.getClaim("id").asLong();
-        String role = decodedJWT.getClaim("role").asString();
-        Member member = Member.builder()
-                .id(id)
-                .role(Role.valueOf(role))
-                .build();
+        Collection<? extends GrantedAuthority> authorities =
+                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList());
 
-        return new PrincipalDetails(member);
+        //여기에는 무엇이?
+        Member principal = new Member(claims.getSubject(), "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(JwtVo.SECRET).build().parseClaimsJws(token);
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.info("잘못된 JWT 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            log.info("만료된 JWT 토큰입니다.");
+        } catch (UnsupportedJwtException e) {
+            log.info("지원되지 않는 JWT 토큰입니다.");
+        } catch (IllegalArgumentException e) {
+            log.info("JWT 토큰이 잘못되었습니다.");
+        }
+        return false;
     }
 
 }
