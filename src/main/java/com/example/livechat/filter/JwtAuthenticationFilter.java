@@ -2,7 +2,7 @@ package com.example.livechat.filter;
 
 import com.example.livechat.auth.JwtProvider;
 import com.example.livechat.auth.PrincipalDetails;
-import com.example.livechat.domain.constant.JwtVo;
+import com.example.livechat.domain.constant.JwtConst;
 import com.example.livechat.domain.dto.MemberDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -82,7 +82,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         // 인증 정보를 토대로 JWT토큰 생성하고 반환
         PrincipalDetails principal = (PrincipalDetails) authResult.getPrincipal();
         String jwtToken = JwtProvider.create(principal);
-        response.addHeader(JwtVo.HEADER, jwtToken);
+        response.addHeader(JwtConst.HEADER, jwtToken);
 
         MemberDto loginRespDto = new MemberDto(principal.getMember());
 //        CustomResponseUtil.success(response, loginRespDto);

@@ -1,6 +1,6 @@
 package com.example.livechat.auth;
 
-import com.example.livechat.domain.constant.JwtVo;
+import com.example.livechat.domain.constant.JwtConst;
 import com.example.livechat.domain.entity.Member;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +25,12 @@ public class JwtProvider {
                 .collect(Collectors.joining(","));
 
         long now = (new Date()).getTime();
-        Date validity = new Date(now + JwtVo.EXPIRATION_TIME);
+        Date validity = new Date(now + JwtConst.EXPIRATION_TIME);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
-                .signWith(SignatureAlgorithm.HS512, JwtVo.SECRET)
+                .signWith(SignatureAlgorithm.HS512, JwtConst.SECRET)
                 .setExpiration(validity)
                 .compact();
     }
@@ -38,7 +38,7 @@ public class JwtProvider {
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts
                 .parserBuilder()
-                .setSigningKey(JwtVo.SECRET)
+                .setSigningKey(JwtConst.SECRET)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -56,7 +56,7 @@ public class JwtProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(JwtVo.SECRET).build().parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(JwtConst.SECRET).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");

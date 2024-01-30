@@ -1,6 +1,6 @@
 package com.example.livechat.domain.constant;
 
-public interface JwtVo {
+public interface JwtConst {
 
     // HS256 (대칭키)
     public static final String SECRET = "EP4scatAjFmhbHfT7IOVZU89dw9vRXRq";

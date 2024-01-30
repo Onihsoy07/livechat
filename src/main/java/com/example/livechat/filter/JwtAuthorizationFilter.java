@@ -2,7 +2,7 @@ package com.example.livechat.filter;
 
 import com.example.livechat.auth.JwtProvider;
 import com.example.livechat.auth.PrincipalDetails;
-import com.example.livechat.domain.constant.JwtVo;
+import com.example.livechat.domain.constant.JwtConst;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             // 토큰이 존재함
             log.debug("디버그 : 토큰이 존재함");
 
-            String token = request.getHeader(JwtVo.HEADER).replace(JwtVo.TOKEN_PREFIX, "");
+            String token = request.getHeader(JwtConst.HEADER).replace(JwtConst.TOKEN_PREFIX, "");
             PrincipalDetails principal = JwtProvider.verify(token);
             log.debug("디버그 : 토큰이 검증이 완료됨");
 
@@ -46,8 +46,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private boolean isHeaderVerify(HttpServletRequest request, HttpServletResponse response) {
-        String header = request.getHeader(JwtVo.HEADER);
-        if (header == null || !header.startsWith(JwtVo.TOKEN_PREFIX)) {
+        String header = request.getHeader(JwtConst.HEADER);
+        if (header == null || !header.startsWith(JwtConst.TOKEN_PREFIX)) {
             return false;
         } else {
             return true;
