@@ -1,6 +1,7 @@
 <template>
     <h1>HOME</h1>
     <input type="text" name="username" id="username" placeholder="username" v-model="username" />
+    <input type="password" name="password" id="password" placeholder="password" v-model="password" />
     <button @click="registerMember">생성</button>
 </template>
 
@@ -9,13 +10,15 @@ import axios from "axios";
 import { ref } from "vue";
 
 const username = ref('');
+const password = ref('');
 
 const registerMember = () => {
     axios({
         method: 'post',
         url: 'http://localhost:8080/members', 
         data: JSON.stringify({
-            username: username.value
+            username: username.value,
+            password: password.value,
         }),
         headers: {
             'Content-Type': 'application/json'
