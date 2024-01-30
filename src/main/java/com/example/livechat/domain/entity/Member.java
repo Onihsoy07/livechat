@@ -1,6 +1,7 @@
 package com.example.livechat.domain.entity;
 
 import com.example.livechat.domain.enumerate.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class Member extends Base {
     @Column(nullable = false, unique = true)
     private String username;
 
+    @JsonIgnore
     @Column(nullable = false, unique = true)
     private String password;
 
