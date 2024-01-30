@@ -1,13 +1,14 @@
 package com.example.livechat.auth;
 
 import com.example.livechat.domain.constant.JwtConst;
-import com.example.livechat.domain.entity.Member;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,7 +16,11 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class JwtProvider {
+
+    private final PrincipalDetailsService principalDetailsService;
 
     private static final String AUTHORITIES_KEY = "auth";
 
@@ -49,7 +54,9 @@ public class JwtProvider {
                         .collect(Collectors.toList());
 
         //여기에는 무엇이?
-        Member principal = new Member(claims.getSubject(), "", authorities);
+//        Member principal = new Member(claims.getSubject(), "", authorities);
+
+        PrincipalDetails principal = (PrincipalDetails) principalDetailsService.loadUserByUsername(claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
