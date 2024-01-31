@@ -15,7 +15,7 @@ const password = ref('');
 const registerMember = () => {
     axios({
         method: 'post',
-        url: 'http://localhost:8080/members', 
+        url: '/api/auth/register', 
         data: JSON.stringify({
             username: username.value,
             password: password.value,
