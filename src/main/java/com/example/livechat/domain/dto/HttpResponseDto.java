@@ -1,4 +1,4 @@
-package com.example.livechat.domain.entity;
+package com.example.livechat.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
