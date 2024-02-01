@@ -41,8 +41,10 @@ public class SpringSecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                            .requestMatchers(new AntPathRequestMatcher("/*")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                            .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
+                            .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(
