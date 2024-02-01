@@ -1,11 +1,11 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import VueRouter from 'vue-router';
+import router from './router';
 import store from './store';
 import Axios from 'axios';
 
 createApp(App)
-    .use(VueRouter)
+    .use(router)
     .use(store)
     .use(Axios)
     .mount('#app')
