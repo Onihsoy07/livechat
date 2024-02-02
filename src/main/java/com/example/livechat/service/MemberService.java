@@ -1,12 +1,17 @@
 package com.example.livechat.service;
 
+import com.example.livechat.auth.JwtProvider;
 import com.example.livechat.domain.dto.MemberDto;
+import com.example.livechat.domain.dto.MemberLoginDto;
 import com.example.livechat.domain.dto.MemberSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.enumerate.Role;
 import com.example.livechat.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +24,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtProvider jwtProvider;
 
     public void saveMember(MemberSaveDto memberSaveDto) {
         Member member = Member.builder()
@@ -37,6 +44,25 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Boolean duplicateUsernameCheck(String username) {
         return !memberRepository.findByUsername(username).isEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public String login(MemberLoginDto memberLoginDto) {
+        UsernamePasswordAuthenticationToken authenticationToken;
+        Authentication authenticate;
+        String token = null;
+
+        try {
+            authenticationToken = new UsernamePasswordAuthenticationToken(memberLoginDto.getUsername(), memberLoginDto.getPassword());
+
+            authenticate = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+            token = jwtProvider.createToken(authenticate);
+        } catch (Exception e) {
+            log.error("login Error : {}", e);
+        }
+
+        return token;
     }
 
     @Transactional(readOnly = true)

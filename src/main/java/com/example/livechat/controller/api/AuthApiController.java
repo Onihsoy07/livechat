@@ -1,5 +1,6 @@
 package com.example.livechat.controller.api;
 
+import com.example.livechat.domain.dto.MemberLoginDto;
 import com.example.livechat.domain.dto.MemberSaveDto;
 import com.example.livechat.domain.dto.TokenDto;
 import com.example.livechat.domain.dto.HttpResponseDto;
@@ -25,13 +26,8 @@ public class AuthApiController {
     private final MemberService memberService;
 
     @PostMapping("/register")
-    public HttpResponseDto<?> saveMember(HttpServletRequest request,
-                                                @RequestBody @Valid MemberSaveDto memberSaveDto,
-                                                BindingResult bindingResult) {
-        //Vue 프론트에서 요청 시 클라이언트 URL 확인(0:0:0:0:0:0:0:1)
-        //Spring Security authorizeHttpRequests에 host가 달라서 안걸림?
-        String requestUrl = request.getRemoteAddr().toString();
-
+    public HttpResponseDto<?> saveMember(@RequestBody @Valid MemberSaveDto memberSaveDto,
+                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             ObjectError error = bindingResult.getAllErrors().get(0);
             return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "Valid error", error);
@@ -43,6 +39,17 @@ public class AuthApiController {
 
         memberService.saveMember(memberSaveDto);
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "사용자 저장 성공", null);
+    }
+
+    @PostMapping("/login")
+    public HttpResponseDto<TokenDto> login(@RequestBody MemberLoginDto memberLoginDto) {
+        String token = memberService.login(memberLoginDto);
+
+        if (token == null) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "아이디 또는 비밀번호가 다릅니다.", new TokenDto(token));
+        }
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "로그인 성공", new TokenDto(token));
     }
 
 }
