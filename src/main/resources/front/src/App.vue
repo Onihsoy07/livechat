@@ -1,14 +1,18 @@
 <template>
-  <HomeVue></HomeVue>
+  <div>
+    <div>
+      <router-link to="/" style="margin: 10px;">HOME</router-link>
+      <router-link to="/register" style="margin: 10px;">회원가입</router-link>
+      <router-link to="/login" style="margin: 10px;">로그인</router-link>
+    </div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
-import HomeVue from './components/MainHome.vue'
-
 export default {
   name: 'App',
   components: {
-    HomeVue
   }
 }
 </script>
