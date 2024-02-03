@@ -3,6 +3,7 @@ package com.example.livechat.controller.api;
 import com.example.livechat.domain.dto.*;
 import com.example.livechat.service.MemberService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -49,13 +50,17 @@ public class AuthApiController {
     }
 
     @PostMapping("/available")
-    public HttpResponseDto<MemberDto> tokenAvailableCheck(@RequestBody TokenDto tokenDto) {
-        MemberDto memberDto = null;
-        if (memberService.tokenAvailableCheck(tokenDto)) {
-            memberDto = memberService.getMemberInfoInToken(tokenDto);
-            return new HttpResponseDto<>(HttpStatus.OK.value(), true, null, memberDto);
+    public HttpResponseDto<Null> tokenAvailableCheck(@RequestBody TokenDto tokenDto) {
+        if (tokenDto.getToken() == null) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "토큰 없음", null);
+        }
+
+        Boolean tokenAvailable = memberService.tokenAvailableCheck(tokenDto);
+
+        if (tokenAvailable) {
+            return new HttpResponseDto<>(HttpStatus.OK.value(), true, "유효한 토큰", null);
         } else {
-            return new HttpResponseDto<>(HttpStatus.UNAUTHORIZED.value(), false, null, memberDto);
+            return new HttpResponseDto<>(HttpStatus.OK.value(), false, "유효하지 않은 토큰", null);
         }
     }
 
