@@ -1,6 +1,7 @@
 package com.example.livechat.auth;
 
 import com.example.livechat.domain.constant.JwtConst;
+import com.example.livechat.domain.dto.MemberDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -40,12 +41,16 @@ public class JwtProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+
         long now = (new Date()).getTime();
         Date validity = new Date(now + JwtConst.EXPIRATION_TIME);
 
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .claim("id", principal.getMember().getId())
+                .claim("username", principal.getUsername())
                 .signWith(SignatureAlgorithm.HS512, key)
                 .setExpiration(validity)
                 .compact();
@@ -83,6 +88,14 @@ public class JwtProvider implements InitializingBean {
             log.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    public MemberDto getMemberInfoInToken(String token) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Long id = Long.parseLong(claims.get("id").toString());
+        String username = claims.get("username").toString();
+
+        return new MemberDto(id, username);
     }
 
 }
