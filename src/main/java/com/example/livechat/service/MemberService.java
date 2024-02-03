@@ -4,6 +4,7 @@ import com.example.livechat.auth.JwtProvider;
 import com.example.livechat.domain.dto.MemberDto;
 import com.example.livechat.domain.dto.MemberLoginDto;
 import com.example.livechat.domain.dto.MemberSaveDto;
+import com.example.livechat.domain.dto.TokenDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.enumerate.Role;
 import com.example.livechat.repository.MemberRepository;
@@ -63,6 +64,19 @@ public class MemberService {
         }
 
         return token;
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean tokenAvailableCheck(TokenDto tokenDto) {
+        boolean tokenAvailable = jwtProvider.validateToken(tokenDto.getToken());
+
+        return tokenAvailable;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDto getMemberInfoInToken(TokenDto tokenDto) {
+        MemberDto memberDto = jwtProvider.getMemberInfoInToken(tokenDto.getToken());
+        return memberDto;
     }
 
     @Transactional(readOnly = true)
