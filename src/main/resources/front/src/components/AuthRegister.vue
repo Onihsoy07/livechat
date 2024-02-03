@@ -8,6 +8,9 @@
 <script setup>
 import axios from "axios";
 import { reactive } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const data = reactive({
     username: '',
@@ -29,6 +32,7 @@ const registerMember = () => {
         if (res.data.success) {
             console.log(res);
             alert('생성 완료');
+            router.push('/');
         } else {
             console.log(res.data);
             alert(res.data.message);
