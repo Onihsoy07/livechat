@@ -1,11 +1,7 @@
 package com.example.livechat.controller.api;
 
-import com.example.livechat.domain.dto.MemberLoginDto;
-import com.example.livechat.domain.dto.MemberSaveDto;
-import com.example.livechat.domain.dto.TokenDto;
-import com.example.livechat.domain.dto.HttpResponseDto;
+import com.example.livechat.domain.dto.*;
 import com.example.livechat.service.MemberService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +46,17 @@ public class AuthApiController {
         }
 
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "로그인 성공", new TokenDto(token));
+    }
+
+    @PostMapping("/available")
+    public HttpResponseDto<MemberDto> tokenAvailableCheck(@RequestBody TokenDto tokenDto) {
+        MemberDto memberDto = null;
+        if (memberService.tokenAvailableCheck(tokenDto)) {
+            memberDto = memberService.getMemberInfoInToken(tokenDto);
+            return new HttpResponseDto<>(HttpStatus.OK.value(), true, null, memberDto);
+        } else {
+            return new HttpResponseDto<>(HttpStatus.UNAUTHORIZED.value(), false, null, memberDto);
+        }
     }
 
 }
