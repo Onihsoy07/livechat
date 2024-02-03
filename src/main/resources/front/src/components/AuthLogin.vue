@@ -17,8 +17,6 @@ const data = reactive({
     username: '',
     password: '',
 });
-// let username = ref('');
-// let password = ref('');
 
 
 const login = () => {
