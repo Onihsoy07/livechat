@@ -1,24 +1,26 @@
 <template>
     <h1>회원가입</h1>
-    <input type="text" name="username" id="username" placeholder="username" v-model="username" />
-    <input type="password" name="password" id="password" placeholder="password" v-model="password" />
+    <input type="text" name="username" id="username" placeholder="username" v-model="data.username" />
+    <input type="password" name="password" id="password" placeholder="password" v-model="data.password" />
     <button @click="registerMember">생성</button>
 </template>
 
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { reactive } from "vue";
 
-const username = ref('');
-const password = ref('');
+const data = reactive({
+    username: '',
+    password: '',
+});
 
 const registerMember = () => {
     axios({
         method: 'post',
         url: 'http://localhost:8080/api/auth/register', 
         data: JSON.stringify({
-            username: username.value,
-            password: password.value,
+            username: data.username,
+            password: data.password,
         }),
         headers: {
             'Content-Type': 'application/json'

@@ -1,20 +1,24 @@
 <template>
     <h1>로그인</h1>
-    <input type="text" name="username" id="username" placeholder="username" v-model="username" />
-    <input type="password" name="password" id="password" placeholder="password" v-model="password" />
+    <input type="text" name="username" id="username" placeholder="username" v-model="data.username" />
+    <input type="password" name="password" id="password" placeholder="password" v-model="data.password" />
     <button @click="login">로그인</button>
 </template>
 
 <script setup>
 import axios from "axios";
-import { ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
 const store = useStore();
 const router = useRouter();
-let username = ref('');
-let password = ref('');
+const data = reactive({
+    username: '',
+    password: '',
+});
+// let username = ref('');
+// let password = ref('');
 
 
 const login = () => {
@@ -22,8 +26,8 @@ const login = () => {
         method: 'post',
         url: 'http://localhost:8080/api/auth/login', 
         data: JSON.stringify({
-            username: username.value,
-            password: password.value,
+            username: data.username,
+            password: data.password,
         }),
         headers: {
             'Content-Type': 'application/json'
@@ -31,18 +35,19 @@ const login = () => {
     }).then((res) => {
         if (res.data.success) {
             console.log(res);
-            // store.commit('SET_TOKEN', res.data.data.token);
             window.localStorage.setItem('token', res.data.data.token);
             store.commit('SET_LOGIN');
             router.push('/');
         } else {
             console.log(res.data);
+            data.username = '';
+            data.password = '';
             alert(res.data.message);
         }
     }).catch((error) => {
         console.log(error);
-        username = ref('');
-        password = ref('');
+        data.username = '';
+        data.password = '';
         alert(error.response.data.message);
     });
 }
