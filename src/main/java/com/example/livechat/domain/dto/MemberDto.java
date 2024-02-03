@@ -13,13 +13,9 @@ public class MemberDto {
 
     private Long id;
     private String username;
-    private String password;
-    private Role role;
 
     public MemberDto(Member member) {
         this.id = member.getId();
         this.username = member.getUsername();
-        this.password = member.getPassword();
-        this.role = member.getRole();
     }
 }
