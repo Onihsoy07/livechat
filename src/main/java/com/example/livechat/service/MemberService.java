@@ -74,12 +74,6 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberDto getMemberInfoInToken(TokenDto tokenDto) {
-        MemberDto memberDto = jwtProvider.getMemberInfoInToken(tokenDto.getToken());
-        return memberDto;
-    }
-
-    @Transactional(readOnly = true)
     public MemberDto getMember(String username) {
         return new MemberDto(getMemberByUsername(username));
     }
