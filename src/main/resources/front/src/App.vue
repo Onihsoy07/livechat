@@ -33,15 +33,13 @@ import { useStore } from 'vuex';
 
 const store = useStore();
 const isLogin = computed(() => store.state.isLogin);
-const memberId = computed(() => store.state.memberId);
 const username = computed(() => store.state.username);
 
 const logout = () => {
   store.commit('SET_LOGOUT');
 };
 const memberDetail = () => {
-  // 추후 구현(임시 데이터 확인용 로그)
-  console.log(isLogin.value, username.value, memberId.value);
+  //추후 구현
 };
 
 onMounted(() => {

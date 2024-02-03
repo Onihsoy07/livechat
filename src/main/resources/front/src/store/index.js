@@ -1,17 +1,25 @@
 import { createStore } from "vuex";
 import axios from "axios";
 
+const encodePayload = () => {
+    const token = window.localStorage.getItem(tokenKeyName);
+
+    const encodingPayload = token.split('.')[1];
+    const payloead = window.atob(encodingPayload);
+
+    return JSON.parse(payloead);
+}
+const tokenKeyName =  'token';
+
 export default createStore({
     state: {
         isLogin: false,
-        tokenKeyName: 'token',
-        memberId: null,
         username: '',
     },
     mutations: {
         LOGIN_CHECK(state) {
-            const token = window.localStorage.getItem(state.tokenKeyName);
-            
+            const token = window.localStorage.getItem(tokenKeyName);
+
             console.log(token);
 
             if (token == null) {
@@ -29,28 +37,38 @@ export default createStore({
                     'Content-Type': 'application/json'
                 }
             }).then((res) => {
+                console.log('토큰 확인', res);
                 if (res.data.success) {
                     console.log(res);
-                    state.memberId = res.data.data.id;
-                    state.username = res.data.data.username;
+                    const payloead = encodePayload();
                     state.isLogin = true;
+                    state.username = payloead.sub;
+                    return;
                 } else {
-                    console.log(res.data);
+                    return;
                 }
             }).catch((error) => {
                 console.log(error);
             });
-
         },
         SET_LOGIN(state) {
+            const payloead = encodePayload();
             state.isLogin = true;
+            state.username = payloead.sub;
         },
         SET_LOGOUT(state) {
-            window.localStorage.removeItem(state.tokenKeyName);
+            window.localStorage.removeItem(tokenKeyName);
             state.isLogin = false;
-            state.memberId = null;
             state.username = '';
-        }
+        },
+        // SET_USERINFO(state) {
+        //     const token = window.localStorage.getItem(state.tokenKeyName);
+
+        //     const encodingPayload = token.split('.')[1];
+        //     const payloead = window.atob(encodingPayload);
+
+        //     state.username = payloead.getItem('sub');
+        // }
     },
     getters: {
 
