@@ -25,4 +25,5 @@ public class MemberController {
         model.addAttribute("memberDto" ,memberDto);
         return "chat/home";
     }
+
 }

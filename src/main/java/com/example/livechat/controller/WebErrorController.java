@@ -12,9 +12,4 @@ public class WebErrorController implements ErrorController {
         return "index.html";
     }
 
-    public String getErrorPath() {
-        return "/error";
-    }
-
-
 }
