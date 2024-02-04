@@ -2,6 +2,7 @@ package com.example.livechat.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,5 +20,14 @@ public class MessageGroup extends Base {
 
     @Column(nullable = false, unique = false)
     private String messageGroupName;
+
+    @Column(nullable = false, unique = false)
+    private Boolean isOpenChat;
+
+    @Builder
+    public MessageGroup(String messageGroupName, Boolean isOpenChat) {
+        this.messageGroupName = messageGroupName;
+        this.isOpenChat = isOpenChat;
+    }
 
 }
