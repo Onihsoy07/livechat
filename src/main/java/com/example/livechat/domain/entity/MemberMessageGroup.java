@@ -2,6 +2,7 @@ package com.example.livechat.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,9 @@ public class MemberMessageGroup {
     @JoinColumn(name = "message_group_id")
     private MessageGroup messageGroup;
 
+    @Builder
+    public MemberMessageGroup(Member member, MessageGroup messageGroup) {
+        this.member = member;
+        this.messageGroup = messageGroup;
+    }
 }
