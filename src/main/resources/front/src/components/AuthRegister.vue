@@ -20,7 +20,7 @@ const data = reactive({
 const registerMember = () => {
     axios({
         method: 'post',
-        url: 'http://localhost:8080/api/auth/register', 
+        url: '/api/auth/register', 
         data: JSON.stringify({
             username: data.username,
             password: data.password,

@@ -18,9 +18,11 @@ export default createStore({
     },
     mutations: {
         LOGIN_CHECK(state) {
-            const token = window.localStorage.getItem(tokenKeyName);
+            if (state.isLogin) {
+                return;
+            }
 
-            console.log(token);
+            const token = window.localStorage.getItem(tokenKeyName);
 
             if (token == null) {
                 console.log('토큰 없음');
@@ -29,7 +31,7 @@ export default createStore({
             
             axios({
                 method: 'post',
-                url: 'http://localhost:8080/api/auth/available', 
+                url: '/api/auth/available', 
                 data: JSON.stringify({
                     token: token,
                 }),
@@ -61,14 +63,6 @@ export default createStore({
             state.isLogin = false;
             state.username = '';
         },
-        // SET_USERINFO(state) {
-        //     const token = window.localStorage.getItem(state.tokenKeyName);
-
-        //     const encodingPayload = token.split('.')[1];
-        //     const payloead = window.atob(encodingPayload);
-
-        //     state.username = payloead.getItem('sub');
-        // }
     },
     getters: {
 

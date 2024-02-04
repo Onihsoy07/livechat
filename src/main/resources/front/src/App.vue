@@ -9,6 +9,9 @@
         </div>
 
         <div v-if="isLogin">
+          <router-link to="/chat" class="router-link">
+            <p>채팅</p>
+          </router-link>
           <button @click="memberDetail" class="btn-nav btn-logout">{{ username }}</button>
           <button @click="logout" class="btn-nav btn-logout">로그아웃</button>
         </div>
