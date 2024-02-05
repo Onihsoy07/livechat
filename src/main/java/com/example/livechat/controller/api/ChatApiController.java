@@ -2,6 +2,7 @@ package com.example.livechat.controller.api;
 
 import com.example.livechat.annotation.CurrentMember;
 import com.example.livechat.domain.dto.HttpResponseDto;
+import com.example.livechat.domain.dto.MessageGroupDto;
 import com.example.livechat.domain.dto.MessageGroupSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.MessageGroup;
@@ -12,11 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -40,6 +39,13 @@ public class ChatApiController {
         memberMessageGroupService.createMemberMessageGroup(member, messageGroup);
 
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
+    }
+
+    @GetMapping
+    private HttpResponseDto<List<MessageGroupDto>> getMyMessageGroupList(@CurrentMember Member member) {
+        List<MessageGroupDto> myMessageGroupList = memberMessageGroupService.getMyMessageGroupList(member.getUsername());
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "내 대화방 목록 로드", myMessageGroupList);
     }
 
 }
