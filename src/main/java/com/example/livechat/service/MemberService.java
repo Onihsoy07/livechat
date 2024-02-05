@@ -19,7 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
+// 트랜잭션 사용하지 않는 매서드가 있음
+// 사용하면 아래 DEBUG 발생
+// Closing JPA EntityManager [SessionImpl(1498918044<open>)] after transaction
+// Not closing pre-bound JPA EntityManager after transaction
+//@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -28,6 +32,7 @@ public class MemberService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtProvider jwtProvider;
 
+    @Transactional
     public void saveMember(MemberSaveDto memberSaveDto) {
         Member member = Member.builder()
                 .username(memberSaveDto.getUsername())
@@ -66,7 +71,6 @@ public class MemberService {
         return token;
     }
 
-    @Transactional(readOnly = true)
     public Boolean tokenAvailableCheck(TokenDto tokenDto) {
         boolean tokenAvailable = jwtProvider.validateToken(tokenDto.getToken());
 
@@ -78,6 +82,7 @@ public class MemberService {
         return new MemberDto(getMemberByUsername(username));
     }
 
+    @Transactional(readOnly = true)
     private Member getMemberByUsername(String username) {
         return memberRepository.findByUsername(username).orElseThrow(() -> {
             throw new IllegalArgumentException(String.format("Member username %s로 찾을 수 없습니다.", username));
