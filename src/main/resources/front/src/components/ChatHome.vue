@@ -51,11 +51,14 @@
         <button @click="createChatDetailOpen">생성</button>
         <button @click="joinChat">참가</button>
     </div>
+
+    <ChatCollection></ChatCollection>
 </template>
 
 <script setup>
 import axios from 'axios';
 import { reactive } from 'vue';
+import ChatCollection from './ChatCollection.vue';
 
 const data = reactive({
     isChatDetailOpen: false,
