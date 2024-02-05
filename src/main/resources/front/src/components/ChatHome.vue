@@ -1,6 +1,23 @@
 <template>
     <h1>CHAT_HOME</h1>
-    <div class="bg-black" v-if="data.isChatDetailOpen">
+    <div class="bg-black create-chat" v-if="data.isChatDetailOpen">
+        <div class="bg-white">
+            <div>
+                <label for="chat_name">방이름</label>
+                <input type="text" name="chat_name" v-model="data.chatName">
+            </div>
+            <div>
+                <label for="setOpenchat">오픈채팅 </label>
+                <input type="checkbox" name="setOpenchat" v-model="data.setOpenChat">
+            </div>
+            <div>
+                <button @click="createChat">생성</button>
+                <button @click="closeChatDetail">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-black create-chat" v-if="data.isChatDetailOpen">
         <div class="bg-white">
             <div>
                 <label for="chat_name">방이름</label>
@@ -16,6 +33,20 @@
             </div>
         </div>
     </div>
+    
+    <div class="bg-black join-chat" v-if="data.isChatSearchOpen">
+        <div class="bg-white">
+            <div>
+                <label for="chat_name">방이름 검색 </label>
+                <input type="text" name="chat_name" v-model="data.searchChatName">
+            </div>
+            <div>
+                <button @click="searchChatName">검색</button>
+                <button @click="closeSearchChatName">취소</button>
+            </div>
+        </div>
+    </div>
+
     <div>
         <button @click="createChatDetailOpen">생성</button>
         <button @click="joinChat">참가</button>
@@ -28,9 +59,16 @@ import { reactive } from 'vue';
 
 const data = reactive({
     isChatDetailOpen: false,
+    isChatSearchOpen: false,
     chatName: '',
+    searchChatName: '',
     setOpenChat: false,
+    
 });
+const defaultJwtHeader = {
+    'Content-Type': 'application/json',
+    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+}
 
 const createChatDetailOpen = () => {
     data.isChatDetailOpen = true;
@@ -44,9 +82,6 @@ const createChat = () => {
         return;
     }
 
-    const token = window.localStorage.getItem('token');
-    console.log(token);
-
     axios({
         method: 'post',
         url: '/api/chat', 
@@ -54,10 +89,7 @@ const createChat = () => {
             chatName: data.chatName,
             isOpenChat: data.setOpenChat,
         }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authentication': 'Bearer ' + token
-        }
+        headers: defaultJwtHeader
     }).then((res) => {
         console.log(res);
         if (res.data.success) {
@@ -72,7 +104,13 @@ const createChat = () => {
     });
 };
 const joinChat = () => {
-    //추후 구현
+    data.isChatSearchOpen = true;
+};
+const closeSearchChatName = () => {
+    data.isChatSearchOpen = false;
+};
+const searchChatName = () => {
+
 };
 </script>
 
