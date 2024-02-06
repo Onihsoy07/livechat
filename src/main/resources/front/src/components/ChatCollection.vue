@@ -9,15 +9,17 @@
 <script setup>
 import { onMounted, reactive } from 'vue';
 import axios from 'axios';
+import { useStore } from 'vuex';
 
+const store = useStore();
 const data = reactive({
-    chatCollection: {},
+    chatCollection: [],
 });
 
 onMounted(() => {
     axios({
         method: 'get',
-        url: '/api/chat', 
+        url: '/api/chat/' + store.state.username,
         data: JSON.stringify({
             chatName: data.chatName,
             isOpenChat: data.setOpenChat,
@@ -29,7 +31,6 @@ onMounted(() => {
     }).then((res) => {
         console.log(res);
         if (res.data.success) {
-            console.log(res);
             data.chatCollection = res.data.data;
         } else {
             alert(res.data.message);
