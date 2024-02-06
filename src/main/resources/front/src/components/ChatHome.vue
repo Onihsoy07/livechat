@@ -44,12 +44,18 @@
                 <button @click="searchChatName">검색</button>
                 <button @click="closeSearchChatName">취소</button>
             </div>
+            <div>
+                <div v-for="(chat, idx) in data.searchChatList" :key="idx">
+                    <div>{{ chat }}</div>
+                    <button @click="joinChat">참가</button>
+                </div>
+            </div>
         </div>
     </div>
 
     <div>
         <button @click="createChatDetailOpen">생성</button>
-        <button @click="joinChat">참가</button>
+        <button @click="openSearchChatName">참가</button>
     </div>
 
     <ChatCollection></ChatCollection>
@@ -66,7 +72,7 @@ const data = reactive({
     chatName: '',
     searchChatName: '',
     setOpenChat: false,
-    
+    searchChatList: [],
 });
 const defaultJwtHeader = {
     'Content-Type': 'application/json',
@@ -106,14 +112,31 @@ const createChat = () => {
         console.log(error);
     });
 };
-const joinChat = () => {
+const openSearchChatName = () => {
     data.isChatSearchOpen = true;
 };
 const closeSearchChatName = () => {
     data.isChatSearchOpen = false;
 };
 const searchChatName = () => {
-
+    data.searchChatList = [];
+    axios({
+        method: 'get',
+        url: '/api/chat?name=' + data.searchChatName, 
+        headers: defaultJwtHeader
+    }).then((res) => {
+        console.log(res);
+        if (res.data.success) {
+            data.searchChatList = res.data.data;
+        } else {
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+};
+const joinChat = () => {
+    console.log("aaa");
 };
 </script>
 
