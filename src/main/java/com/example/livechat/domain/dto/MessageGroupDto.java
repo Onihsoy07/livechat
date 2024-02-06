@@ -10,9 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MessageGroupDto {
 
+    private Long id;
     private String chatName;
 
     public MessageGroupDto(MessageGroup messageGroup) {
+        this.id = messageGroup.getId();
         this.chatName = messageGroup.getMessageGroupName();
     }
 }
