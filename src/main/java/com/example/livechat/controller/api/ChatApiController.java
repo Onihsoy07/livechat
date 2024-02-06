@@ -41,11 +41,27 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
     }
 
-    @GetMapping
-    private HttpResponseDto<List<MessageGroupDto>> getMyMessageGroupList(@CurrentMember Member member) {
+    @GetMapping("/{username}")
+    public HttpResponseDto<List<MessageGroupDto>> getMyMessageGroupList(@PathVariable("username") String username,
+                                                                        @CurrentMember Member member) {
+        if (!member.getUsername().equals(username)) {
+            return new HttpResponseDto<>(HttpStatus.FORBIDDEN.value(), false, "권한 없음", null);
+        }
+
         List<MessageGroupDto> myMessageGroupList = memberMessageGroupService.getMyMessageGroupList(member.getUsername());
 
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "내 대화방 목록 로드", myMessageGroupList);
+    }
+
+    @GetMapping
+    public HttpResponseDto<List<MessageGroupDto>> searchChatName(@RequestParam("name") String chatName) {
+        List<MessageGroupDto> messageGroupList = messageGroupService.searchChatName(chatName);
+
+        if (messageGroupList.isEmpty()) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "맞는 대화방이 존재하지 않습니다.", null);
+        }
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 찾기 성공", messageGroupList);
     }
 
 }
