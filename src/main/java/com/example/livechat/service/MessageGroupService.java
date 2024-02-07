@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -29,6 +30,7 @@ public class MessageGroupService {
         return messageGroupRepository.save(messageGroup);
     }
 
+    @Transactional(readOnly = true)
     public List<MessageGroupDto> searchChatName(String chatName) {
         List<MessageGroup> messageGroupList = messageGroupRepository.findByMessageGroupNameContaining(chatName);
         List<MessageGroupDto> messageGroupDtoList = new ArrayList<>();
@@ -38,6 +40,13 @@ public class MessageGroupService {
         }
 
         return messageGroupDtoList;
+    }
+
+    @Transactional(readOnly = true)
+    public MessageGroup getMessageGroupEntity(Long id) {
+        return messageGroupRepository.findById(id).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("MessageGroup ID : %d 로 찾을 수 없습니다.", id));
+        });
     }
 
 }

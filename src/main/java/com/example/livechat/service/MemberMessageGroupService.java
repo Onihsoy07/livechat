@@ -42,4 +42,5 @@ public class MemberMessageGroupService {
         return messageGroupList;
     }
 
+
 }
