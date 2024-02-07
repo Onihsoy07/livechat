@@ -1,22 +1,6 @@
 <template>
     <h1>CHAT_HOME</h1>
-    <div class="bg-black create-chat" v-if="data.isChatDetailOpen">
-        <div class="bg-white">
-            <div>
-                <label for="chat_name">방이름</label>
-                <input type="text" name="chat_name" v-model="data.chatName">
-            </div>
-            <div>
-                <label for="setOpenchat">오픈채팅 </label>
-                <input type="checkbox" name="setOpenchat" v-model="data.setOpenChat">
-            </div>
-            <div>
-                <button @click="createChat">생성</button>
-                <button @click="closeChatDetail">취소</button>
-            </div>
-        </div>
-    </div>
-
+    
     <div class="bg-black create-chat" v-if="data.isChatDetailOpen">
         <div class="bg-white">
             <div>
@@ -47,7 +31,7 @@
             <div>
                 <div v-for="(chat, idx) in data.searchChatList" :key="idx">
                     <div>{{ chat }}</div>
-                    <button @click="joinChat">참가</button>
+                    <button @click="joinChat(chat.id)">참가</button>
                 </div>
             </div>
         </div>
@@ -135,8 +119,24 @@ const searchChatName = () => {
         console.log(error);
     });
 };
-const joinChat = () => {
-    console.log("aaa");
+const joinChat = (chatId) => {
+    alert(chatId);
+    axios({
+        method: 'post',
+        url: '/api/chat/' + chatId, 
+        headers: defaultJwtHeader
+    }).then((res) => {
+        console.log(res);
+        if (res.data.success) {
+            data.isChatSearchOpen = false;
+            data.searchChatName = '';
+            data.setOpenChat = false;
+        } else {
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
 };
 </script>
 
