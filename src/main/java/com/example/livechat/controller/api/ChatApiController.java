@@ -64,4 +64,13 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 찾기 성공", messageGroupList);
     }
 
+    @PostMapping("/{chatId}")
+    public HttpResponseDto<?> joinChat(@PathVariable("chatId") Long chatId,
+                                       @CurrentMember Member member) {
+        MessageGroup messageGroup = messageGroupService.getMessageGroupEntity(chatId);
+        memberMessageGroupService.createMemberMessageGroup(member, messageGroup);
+
+        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
+    }
+
 }
