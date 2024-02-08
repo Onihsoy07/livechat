@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div v-for="(chat, idx) in data.chatCollection" :key="idx">
-            <div>{{ chat.chatName }}</div>
+    <div class="chat-collection-wrap">
+        <div v-for="(chat, idx) in data.chatCollection" :key="idx" class="chat-room-wrap">
+            <div class="chat-name">{{ chat.chatName }}</div>
         </div>
     </div>
 </template>
@@ -43,5 +43,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
+.chat-collection-wrap {
+    width: 200px;
+    border: 1px solid gray;
+    display: block;
+}
+.chat-room-wrap {
+    display: block;
+}
+.chat-name {
+    height: 15px;
+    line-height: 15px;
+    padding: 8px 0px;
+    border: 1px solid gray;
+}
+.chat-name:hover {
+    background: #DCDCDC;
+    cursor: pointer;
+}
 </style>
