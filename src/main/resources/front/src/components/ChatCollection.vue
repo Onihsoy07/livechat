@@ -1,6 +1,6 @@
 <template>
     <div class="chat-collection-wrap">
-        <div v-for="(chat, idx) in data.chatCollection" :key="idx" class="chat-room-wrap">
+        <div v-for="(chat, idx) in data.chatCollection" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
             <div class="chat-name">{{ chat.chatName }}</div>
         </div>
     </div>
@@ -15,6 +15,11 @@ const store = useStore();
 const data = reactive({
     chatCollection: [],
 });
+
+const openChat = (chatId) => {
+    console.log(chatId);
+    store.commit('SET_CHATID', chatId);
+};
 
 onMounted(() => {
     axios({

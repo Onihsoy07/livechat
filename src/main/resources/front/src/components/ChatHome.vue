@@ -42,13 +42,19 @@
         <button @click="openSearchChatName">참가</button>
     </div>
 
-    <ChatCollection></ChatCollection>
+    <div class="chat-outer">
+        <ChatCollection></ChatCollection>
+    
+        <ChatComponent></ChatComponent>
+    </div>
+
 </template>
 
 <script setup>
 import axios from 'axios';
 import { reactive } from 'vue';
 import ChatCollection from './ChatCollection.vue';
+import ChatComponent from './ChatComponent.vue';
 
 const data = reactive({
     isChatDetailOpen: false,
@@ -61,7 +67,7 @@ const data = reactive({
 const defaultJwtHeader = {
     'Content-Type': 'application/json',
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-}
+};
 
 const createChatDetailOpen = () => {
     data.isChatDetailOpen = true;
@@ -159,5 +165,9 @@ const joinChat = (chatId) => {
 }
 .bg-white div {
     margin: 10px 0px;
+}
+.chat-outer {
+    display: inline-flex;
+    margin-top: 20px;
 }
 </style>

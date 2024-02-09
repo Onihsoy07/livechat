@@ -15,6 +15,9 @@ export default createStore({
     state: {
         isLogin: false,
         username: '',
+        currentChatId: null,
+        messageContentList: [],
+
     },
     mutations: {
         LOGIN_CHECK(state) {
@@ -63,6 +66,19 @@ export default createStore({
             state.isLogin = false;
             state.username = '';
         },
+        SET_CHATDETAILLIST(state, messageContentList) {
+            state.messageContentList = messageContentList;
+        },
+        CLEAR_CHATDETAILLIST(state) {
+            state.messageContentList = [];
+        },
+        SET_CHATID(state, chatID) {
+            console.log(chatID);
+            state.currentChatId = chatID;
+        },
+        CLEAR_CHATID(state) {
+            state.currentChatId = null;
+        }
     },
     getters: {
 
