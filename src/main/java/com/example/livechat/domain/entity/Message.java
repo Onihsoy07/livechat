@@ -2,6 +2,7 @@ package com.example.livechat.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,5 +34,12 @@ public class Message extends Base {
     @ManyToOne(optional = false)
     @JoinColumn(name = "message_group_id")
     private MessageGroup messageGroup;
+
+    @Builder
+    public Message(String contents, Member sender, MessageGroup messageGroup) {
+        this.contents = contents;
+        this.sender = sender;
+        this.messageGroup = messageGroup;
+    }
 
 }
