@@ -1,7 +1,14 @@
 <template>
     <div class="chat-wrap">
         <div class="chat-contents-wrap">
-            {{ messageContentList }}
+            <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
+                <div class="message-user">
+                    {{ messageData.sender.username }}
+                </div>
+                <div class="message-contents">
+                    {{ messageData.contents }}
+                </div>
+            </div>
         </div>
         <div class="message-box-wrap">
             <div class="message-box">
@@ -85,5 +92,24 @@ const sendMessage = () => {
     position: relative;
     top: -30px;
     left: 65px;
+}
+.chat-contents {
+    display: flex;
+    padding: 10px 5px;
+}
+.message-user {
+    border: 1px solid gray;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 20px;
+    width: 20px;
+    height: 20px;
+}
+.message-contents {
+    margin-left: 20px;
+    border: 1px solid gray;
+    border-radius: 10%;
+    width: 80%;
+    text-align: left;
 }
 </style>

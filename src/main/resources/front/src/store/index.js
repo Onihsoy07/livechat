@@ -72,9 +72,28 @@ export default createStore({
         CLEAR_CHATDETAILLIST(state) {
             state.messageContentList = [];
         },
-        SET_CHATID(state, chatID) {
-            console.log(chatID);
-            state.currentChatId = chatID;
+        SET_CHATID(state, chatId) {
+            console.log(chatId);
+            state.currentChatId = chatId;
+
+            axios({
+                method: 'get',
+                url: '/api/message?chat-id=' + chatId, 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+                }
+            }).then((res) => {
+                console.log(res);
+                if (res.data.success) {
+                    state.messageContentList = res.data.data;
+                    return;
+                } else {
+                    return;
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
         },
         CLEAR_CHATID(state) {
             state.currentChatId = null;
