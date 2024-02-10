@@ -2,24 +2,18 @@ package com.example.livechat.controller.api;
 
 import com.example.livechat.annotation.CurrentMember;
 import com.example.livechat.domain.dto.HttpResponseDto;
+import com.example.livechat.domain.dto.MessageDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.service.MessageService;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -41,6 +35,13 @@ public class MessageApiController {
         messageService.saveMessage(messageSaveDto, member);
 
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "메시지 생성 성공", null);
+    }
+
+    @GetMapping
+    public HttpResponseDto<List<MessageDto>> getChatMessageList(@RequestParam("chat-id") final Long chatId) {
+        List<MessageDto> messageList = messageService.getChatMessageList(chatId);
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);
     }
 
 }
