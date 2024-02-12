@@ -1,6 +1,8 @@
 package com.example.livechat.service.redis;
 
 import com.example.livechat.domain.dto.MessageDto;
+import com.example.livechat.domain.dto.MessagePushRedisDto;
+import com.example.livechat.domain.dto.MessageSaveDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,8 +16,8 @@ public class RedisPublisher {
 
     private final RedisTemplate<String, Object> redisTemplate;
 
-    public void publisher(ChannelTopic topic, MessageDto messageDto) {
-        redisTemplate.convertAndSend(topic.getTopic(), messageDto);
+    public void publisher(ChannelTopic topic, MessagePushRedisDto message) {
+        redisTemplate.convertAndSend(topic.getTopic(), message);
     }
 
 
