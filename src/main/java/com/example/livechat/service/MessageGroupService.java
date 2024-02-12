@@ -4,13 +4,17 @@ import com.example.livechat.domain.dto.MessageGroupDto;
 import com.example.livechat.domain.dto.MessageGroupSaveDto;
 import com.example.livechat.domain.entity.MessageGroup;
 import com.example.livechat.repository.MessageGroupRepository;
+import com.example.livechat.service.redis.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -20,6 +24,10 @@ import java.util.Optional;
 public class MessageGroupService {
 
     private final MessageGroupRepository messageGroupRepository;
+    private final Map<String, ChannelTopic> topics;
+    private final RedisMessageListenerContainer redisMessageListenerContainer;
+    private final RedisSubscriber redisSubscriber;
+
 
     public MessageGroup createChat(MessageGroupSaveDto messageGroupSaveDto) {
         MessageGroup messageGroup = MessageGroup.builder()
@@ -27,7 +35,17 @@ public class MessageGroupService {
                 .isOpenChat(messageGroupSaveDto.getIsOpenChat())
                 .build();
 
-        return messageGroupRepository.save(messageGroup);
+        messageGroupRepository.save(messageGroup);
+
+        String chatId = "room" + messageGroup.getId();
+
+        if(!topics.containsKey(chatId)) {
+            ChannelTopic topic = new ChannelTopic(chatId);
+            redisMessageListenerContainer.addMessageListener(redisSubscriber, topic);
+            topics.put(chatId, topic);
+        }
+
+        return messageGroup;
     }
 
     @Transactional(readOnly = true)
