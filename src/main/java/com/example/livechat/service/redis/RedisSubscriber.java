@@ -13,24 +13,24 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisSubscriber implements MessageListener {
+public class RedisSubscriber /*implements MessageListener*/ {
 
-    private final ObjectMapper mapper;
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final SimpMessageSendingOperations messageSendingOperations;
-
-    @Override
-    public void onMessage(Message message, byte[] pattern) {
-        try {
-
-            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
-
-            MessageDto chatMessage = mapper.readValue(publishMessage, MessageDto.class);
-
-            messageSendingOperations.convertAndSend("/sub/chats/"/* + chatMessage.getRoomId()*/, chatMessage);
-
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-    }
+//    private final ObjectMapper mapper;
+//    private final RedisTemplate<String, Object> redisTemplate;
+//    private final SimpMessageSendingOperations messageSendingOperations;
+//
+//    @Override
+//    public void onMessage(Message message, byte[] pattern) {
+//        try {
+//
+//            String publishMessage = (String) redisTemplate.getStringSerializer().deserialize(message.getBody());
+//
+//            MessageDto chatMessage = mapper.readValue(publishMessage, MessageDto.class);
+//
+//            messageSendingOperations.convertAndSend("/sub/chats/"/* + chatMessage.getRoomId()*/, chatMessage);
+//
+//        } catch (Exception e) {
+//            log.error(e.getMessage());
+//        }
+//    }
 }
