@@ -1,6 +1,7 @@
 package com.example.livechat.service;
 
 import com.example.livechat.domain.dto.MessageDto;
+import com.example.livechat.domain.dto.MessagePushRedisDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
@@ -23,7 +24,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final MessageGroupService messageGroupService;
 
-    public void saveMessage(MessageSaveDto messageSaveDto, Member member) {
+    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, Member member) {
         MessageGroup messageGroup = messageGroupService.getMessageGroupEntity(messageSaveDto.getChatId());
 
         Message message = Message.builder()
@@ -33,6 +34,8 @@ public class MessageService {
                 .build();
 
         messageRepository.save(message);
+
+        return new MessagePushRedisDto(message);
     }
 
     @Transactional(readOnly = true)
