@@ -9,6 +9,8 @@ import com.example.livechat.domain.entity.MessageGroup;
 import com.example.livechat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +25,11 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final MessageGroupService messageGroupService;
+    private final RedisTemplate redisTemplate;
 
-    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, Member member) {
+    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto,
+                                           Member member,
+                                           Long chatId) {
         MessageGroup messageGroup = messageGroupService.getMessageGroupEntity(messageSaveDto.getChatId());
 
         Message message = Message.builder()
@@ -35,7 +40,11 @@ public class MessageService {
 
         messageRepository.save(message);
 
-        return new MessagePushRedisDto(message);
+        MessagePushRedisDto messagePushRedisDto = new MessagePushRedisDto(message);
+
+        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
+
+        return messagePushRedisDto;
     }
 
     @Transactional(readOnly = true)

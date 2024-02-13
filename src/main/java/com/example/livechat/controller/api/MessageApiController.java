@@ -9,6 +9,7 @@ import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.service.MessageService;
 import com.example.livechat.service.redis.RedisPublisher;
+import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,22 +30,22 @@ import java.util.List;
 public class MessageApiController {
 
     private final MessageService messageService;
-    private final RedisPublisher redisPublisher;
-    private final RedisTemplate redisTemplate;
+//    private final RedisPublisher redisPublisher;
+//    private final RedisTemplate redisTemplate;
 
-    @PostMapping
-    public HttpResponseDto<?> saveMessage(@CurrentMember Member member,
-                                          @RequestBody@Valid final MessageSaveDto messageSaveDto,
-                                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
-            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, errorMessage, null);
-        }
-
-        messageService.saveMessage(messageSaveDto, member);
-
-        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "메시지 생성 성공", null);
-    }
+//    @PostMapping
+//    public HttpResponseDto<?> saveMessage(@CurrentMember Member member,
+//                                          @RequestBody@Valid final MessageSaveDto messageSaveDto,
+//                                          BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            String errorMessage = bindingResult.getAllErrors().get(0).getDefaultMessage();
+//            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, errorMessage, null);
+//        }
+//
+//        messageService.saveMessage(messageSaveDto, member);
+//
+//        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "메시지 생성 성공", null);
+//    }
 
     @GetMapping
     public HttpResponseDto<List<MessageDto>> getChatMessageList(@RequestParam("chat-id") final Long chatId) {
@@ -57,11 +58,12 @@ public class MessageApiController {
     public void sendMessage(@DestinationVariable("chatId") final Long chatId,
                             MessageSaveDto messageSaveDto,
                             @CurrentMember Member member) {
-        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member);
+        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member, chatId);
 
         log.info("messagePushRedisDto : {}", messagePushRedisDto);
 
-        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
+//        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
+//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
     }
 
 }

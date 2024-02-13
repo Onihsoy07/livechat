@@ -41,7 +41,7 @@ public class MessageGroupService {
 
         if(!topics.containsKey(chatId)) {
             ChannelTopic topic = new ChannelTopic(chatId);
-            redisMessageListenerContainer.addMessageListener(redisSubscriber, topic);
+//            redisMessageListenerContainer.addMessageListener(redisSubscriber, topic);
             topics.put(chatId, topic);
         }
 
