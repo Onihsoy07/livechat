@@ -25,7 +25,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final MessageGroupService messageGroupService;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
 
     public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto,
                                            Member member,
@@ -42,7 +42,7 @@ public class MessageService {
 
         MessagePushRedisDto messagePushRedisDto = new MessagePushRedisDto(message);
 
-        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
+//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
 
         return messagePushRedisDto;
     }

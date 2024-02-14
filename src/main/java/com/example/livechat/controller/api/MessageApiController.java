@@ -31,7 +31,7 @@ public class MessageApiController {
 
     private final MessageService messageService;
 //    private final RedisPublisher redisPublisher;
-//    private final RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
 //    @PostMapping
 //    public HttpResponseDto<?> saveMessage(@CurrentMember Member member,
@@ -63,7 +63,7 @@ public class MessageApiController {
         log.info("messagePushRedisDto : {}", messagePushRedisDto);
 
 //        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
-//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
+        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
     }
 
 }

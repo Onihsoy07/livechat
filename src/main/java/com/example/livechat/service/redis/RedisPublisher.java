@@ -1,8 +1,6 @@
 package com.example.livechat.service.redis;
 
-import com.example.livechat.domain.dto.MessageDto;
 import com.example.livechat.domain.dto.MessagePushRedisDto;
-import com.example.livechat.domain.dto.MessageSaveDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
