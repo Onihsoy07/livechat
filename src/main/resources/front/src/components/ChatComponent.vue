@@ -44,9 +44,9 @@ const sendMessage = () => {
 
     axios({
         method: 'post',
-        url: '/api/message', 
+        url: '/chats/' + chatId.value + '/messages',  //'/api/message', 
         data: JSON.stringify({
-            chatId: 1,
+            chatId: chatId.value,
             message: data.message
         }),
         headers: defaultJwtHeader
