@@ -54,10 +54,11 @@ public class MessageApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);
     }
 
-    @MessageMapping("/chats/{chatId}/messages")
-    public void sendMessage(@DestinationVariable("chatId") final Long chatId,
-                            MessageSaveDto messageSaveDto,
+    @MessageMapping
+    public void sendMessage(MessageSaveDto messageSaveDto,
                             @CurrentMember Member member) {
+        Long chatId = messageSaveDto.getChatId();
+
         MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member, chatId);
 
         log.info("messagePushRedisDto : {}", messagePushRedisDto);
