@@ -21,6 +21,8 @@ export default createStore({
     },
     mutations: {
         LOGIN_CHECK(state) {
+            console.log('login check', state.isLogin);
+            console.log('state.username', state.username);
             if (state.isLogin) {
                 return;
             }
@@ -44,7 +46,6 @@ export default createStore({
             }).then((res) => {
                 console.log('토큰 확인', res);
                 if (res.data.success) {
-                    console.log(res);
                     const payloead = encodePayload();
                     state.isLogin = true;
                     state.username = payloead.sub;

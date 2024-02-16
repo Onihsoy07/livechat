@@ -14,6 +14,7 @@
             <div class="message-box">
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
+                <button @click="connect">연결</button>
             </div>
         </div>
     </div>
@@ -23,6 +24,12 @@
 import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import axios from "axios"
+import Stomp from "webstomp-client";
+import SockJS from "sockjs-client";
+
+
+const sock = new SockJS("/ws/chat");
+const ws = Stomp.over(sock);
 
 const store = useStore();
 
@@ -37,6 +44,20 @@ const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
 
+const connect = () => {
+    ws.connect(
+        {},
+        frame => {
+            ws.subscribe(
+                "/sub",
+                res => {
+                    console.log('frame', frame);
+                    console.log('response', res);
+                }
+            )
+        }
+    );
+};
 const sendMessage = () => {
     if (data.message == '' || chatId.value == null) {
         return;
