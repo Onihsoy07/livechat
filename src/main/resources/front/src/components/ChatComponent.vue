@@ -9,32 +9,33 @@
                     {{ messageData.contents }}
                 </div>
             </div>
+            <div>{{ data.messageList }}</div>
         </div>
         <div class="message-box-wrap">
             <div class="message-box">
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
-                <button @click="connect">연결</button>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import axios from "axios"
-import Stomp from "webstomp-client";
+import axios from "axios";
+import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
 
 
-const sock = new SockJS("/ws/chat");
+const sock = new SockJS("http://localhost:8080/ws/chat");
 const ws = Stomp.over(sock);
 
 const store = useStore();
 
 const data = reactive({
     message: '',
+    messageList: [],
 });
 const messageContentList = computed(() => store.state.messageContentList);
 const chatId = computed(() => store.state.currentChatId);
@@ -44,18 +45,26 @@ const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
 
+
 const connect = () => {
+    console.log('sock', sock);
+    console.log('ws', ws);
+    console.log("connect");
     ws.connect(
         {},
         frame => {
+            console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/sub",
+                "/send", 
                 res => {
-                    console.log('frame', frame);
-                    console.log('response', res);
+                    console.log('구독으로 받은 메시지 입니다.', res);
+                    data.messageList.push(res.body);
                 }
-            )
-        }
+            );
+        },
+        error => {
+        console.log('소켓 연결 실패', error);
+        } 
     );
 };
 const sendMessage = () => {
@@ -82,6 +91,11 @@ const sendMessage = () => {
         console.log(error);
     });
 };
+
+
+onMounted(() => {
+    connect();
+});
 </script>
 
 <style scoped>
@@ -98,9 +112,9 @@ const sendMessage = () => {
     width: 100%;
     height: 100px;
 }
-.message-box {
+/* .message-box {
     
-}
+} */
 .message-box textarea {
     all: unset;
     width: 100%;

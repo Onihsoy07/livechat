@@ -40,6 +40,7 @@ const store = useStore();
 const isLogin = computed(() => store.state.isLogin);
 const username = computed(() => store.state.username);
 
+
 const logout = () => {
   store.commit('SET_LOGOUT');
   router.push('/');
@@ -47,6 +48,7 @@ const logout = () => {
 const memberDetail = () => {
   //추후 구현
 };
+
 
 onMounted(() => {
   if (!isLogin.value) {
@@ -99,11 +101,12 @@ onMounted(() => {
   font-size: 16px;
   padding: 0px 10px;
 }
-.btn-member-detail {
-
+/* .btn-member-detail {
+  
 }
 .btn-logout {
-}
+
+} */
 .btn-logout:hover {
   color: white;
   cursor: pointer;
