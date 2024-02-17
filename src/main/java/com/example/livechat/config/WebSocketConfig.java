@@ -25,17 +25,18 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws/chat")
+//                .setAllowedOrigins("http://localhost:8080")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 서버 -> 클라이언트 메시지 endpoint
-        registry.enableSimpleBroker("/sub");
+        // 클라이언트 메시지 구독하는 endpoint
+        registry.enableSimpleBroker("/send");
 
         // 클라이언트 -> 서버 메시지 endpoint
-        registry.setApplicationDestinationPrefixes("/pub");
+//        registry.setApplicationDestinationPrefixes("/pub");
     }
 
     @Override
