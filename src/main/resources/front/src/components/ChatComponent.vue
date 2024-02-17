@@ -23,7 +23,7 @@
 <script setup>
 import { reactive, computed, onMounted } from "vue";
 import { useStore } from "vuex";
-import axios from "axios";
+// import axios from "axios";
 import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
 
@@ -41,7 +41,7 @@ const messageContentList = computed(() => store.state.messageContentList);
 const chatId = computed(() => store.state.currentChatId);
 
 const defaultJwtHeader = {
-    'Content-Type': 'application/json',
+    // 'Content-Type': 'application/json',
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
 
@@ -51,7 +51,7 @@ const connect = () => {
     console.log('ws', ws);
     console.log("connect");
     ws.connect(
-        {},
+        defaultJwtHeader,
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
@@ -59,7 +59,8 @@ const connect = () => {
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     data.messageList.push(res.body);
-                }
+                },
+                defaultJwtHeader
             );
         },
         error => {
@@ -68,28 +69,19 @@ const connect = () => {
     );
 };
 const sendMessage = () => {
+    console.log('sendMessage');
     if (data.message == '' || chatId.value == null) {
         return;
     }
 
-    axios({
-        method: 'post',
-        url: '/chats/' + chatId.value + '/messages',  //'/api/message', 
-        data: JSON.stringify({
+    console.log('ws 전송 시작');
+    if (ws && ws.connected) {
+        const body = JSON.stringify({
             chatId: chatId.value,
             message: data.message
-        }),
-        headers: defaultJwtHeader
-    }).then((res) => {
-        console.log(res);
-        if (res.data.success) {
-            alert(res.data.message);
-        } else {
-            alert(res.data.message);
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
+        });
+        ws.send("/receive", body, defaultJwtHeader);
+    }
 };
 
 
