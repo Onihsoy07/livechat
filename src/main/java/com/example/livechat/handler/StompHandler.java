@@ -33,7 +33,8 @@ public class StompHandler implements ChannelInterceptor {
 
 
         if (authentication.equals("null")) {
-            return null;
+            log.info("JWT 토큰이 존재하지 않습니다.");
+            throw new JwtUnAuthenticateException("JWT 토큰이 존재하지 않습니다.");
         }
 
         String jwtToken = authentication.substring(7);
