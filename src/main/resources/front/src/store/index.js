@@ -65,7 +65,7 @@ export default createStore({
         SET_LOGOUT(state) {
             window.localStorage.removeItem(tokenKeyName);
             state.isLogin = false;
-            state.username = '';
+            state.username = null;
         },
         SET_CHATDETAILLIST(state, messageContentList) {
             state.messageContentList = messageContentList;

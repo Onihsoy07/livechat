@@ -9,7 +9,9 @@
                     {{ messageData.contents }}
                 </div>
             </div>
-            <div>{{ data.messageList }}</div>
+            <div v-for="(messageDto, idx) in data.messageList" :key="idx">
+                <div>{{ messageDto }}</div>      
+            </div>
         </div>
         <div class="message-box-wrap">
             <div class="message-box">
@@ -58,6 +60,7 @@ const connect = () => {
                 "/send", 
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
+                    console.log('body', res.body);
                     data.messageList.push(res.body);
                 },
                 defaultJwtHeader
@@ -80,8 +83,11 @@ const sendMessage = () => {
             chatId: chatId.value,
             message: data.message
         });
-        ws.send("/receive", body, defaultJwtHeader);
+        console.log(body);
+        ws.send("/api/chat/" + chatId.value, body, defaultJwtHeader);
     }
+
+    data.message = '';
 };
 
 
