@@ -1,5 +1,7 @@
 package com.example.livechat.service;
 
+import com.example.livechat.auth.JwtProvider;
+import com.example.livechat.auth.PrincipalDetails;
 import com.example.livechat.domain.dto.MessageDto;
 import com.example.livechat.domain.dto.MessagePushRedisDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
@@ -23,17 +25,21 @@ import java.util.List;
 @Transactional
 public class MessageService {
 
+    private final MemberService memberService;
     private final MessageRepository messageRepository;
     private final MessageGroupService messageGroupService;
+    private final JwtProvider jwtProvider;
 //    private final RedisTemplate redisTemplate;
 
-    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto,
-                                           Member member,
-                                           Long chatId) {
+    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, String token) {
         MessageGroup messageGroup = messageGroupService.getMessageGroupEntity(messageSaveDto.getChatId());
 
+        String jwtToken = token.substring(7);
+
+        Member sender = ((PrincipalDetails) jwtProvider.getAuthentication(jwtToken).getPrincipal()).getMember();
+
         Message message = Message.builder()
-                .sender(member)
+                .sender(sender)
                 .messageGroup(messageGroup)
                 .contents(messageSaveDto.getMessage())
                 .build();
