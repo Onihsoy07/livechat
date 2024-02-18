@@ -89,4 +89,11 @@ public class MemberService {
         });
     }
 
+    @Transactional(readOnly = true)
+    public Member getMemberEntity(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Member ID %d로 찾을 수 없습니다.", memberId));
+        });
+    }
+
 }
