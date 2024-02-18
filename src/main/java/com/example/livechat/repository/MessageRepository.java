@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
-    @Query("select m from Message m join fetch m.sender where m.messageGroup.id = :chatId")
+    @Query("select m from Message m join fetch m.sender where m.chat.id = :chatId")
     List<Message> findByMessageGroup_Id(@Param("chatId") Long chatId);
 
 }

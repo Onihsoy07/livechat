@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(schema = "live_chat")
-public class MemberMessageGroup {
+public class MemberChat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,12 +21,12 @@ public class MemberMessageGroup {
     private Member member;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "message_group_id")
-    private MessageGroup messageGroup;
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
     @Builder
-    public MemberMessageGroup(Member member, MessageGroup messageGroup) {
+    public MemberChat(Member member, Chat chat) {
         this.member = member;
-        this.messageGroup = messageGroup;
+        this.chat = chat;
     }
 }

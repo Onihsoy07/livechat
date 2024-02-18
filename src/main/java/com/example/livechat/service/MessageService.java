@@ -7,12 +7,10 @@ import com.example.livechat.domain.dto.MessagePushRedisDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
-import com.example.livechat.domain.entity.MessageGroup;
+import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,12 +25,12 @@ public class MessageService {
 
     private final MemberService memberService;
     private final MessageRepository messageRepository;
-    private final MessageGroupService messageGroupService;
+    private final ChatService chatService;
     private final JwtProvider jwtProvider;
 //    private final RedisTemplate redisTemplate;
 
     public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, String token) {
-        MessageGroup messageGroup = messageGroupService.getMessageGroupEntity(messageSaveDto.getChatId());
+        Chat chat = chatService.getChatEntity(messageSaveDto.getChatId());
 
         String jwtToken = token.substring(7);
 
@@ -40,7 +38,7 @@ public class MessageService {
 
         Message message = Message.builder()
                 .sender(sender)
-                .messageGroup(messageGroup)
+                .chat(chat)
                 .contents(messageSaveDto.getMessage())
                 .build();
 

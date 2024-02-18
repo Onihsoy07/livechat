@@ -26,7 +26,7 @@ public class Attach extends Base {
     private Member sender;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "message_group_id")
-    private MessageGroup messageGroup;
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
 }

@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +31,14 @@ public class Message extends Base {
     private Member sender;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "message_group_id")
-    private MessageGroup messageGroup;
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
     @Builder
-    public Message(String contents, Member sender, MessageGroup messageGroup) {
+    public Message(String contents, Member sender, Chat chat) {
         this.contents = contents;
         this.sender = sender;
-        this.messageGroup = messageGroup;
+        this.chat = chat;
     }
 
 }
