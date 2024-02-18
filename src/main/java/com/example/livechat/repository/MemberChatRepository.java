@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MemberChatRepository extends JpaRepository<MemberChat, Long> {
 
-    @Query("select mmg from MemberChat mmg join fetch mmg.chat where mmg.member.username like concat('%', :username, '%')")
+    @Query("select mmg from MemberChat mmg join fetch mmg.chat where mmg.member.username = :username")
     List<MemberChat> findByMember_Username(@Param("username") String username);
 
 }
