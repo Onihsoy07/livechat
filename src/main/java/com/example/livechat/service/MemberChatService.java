@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,6 +41,12 @@ public class MemberChatService {
         }
 
         return chatList;
+    }
+
+    @Transactional(readOnly = true)
+    public Boolean checkMyChat(Long chatId, Long memberId) {
+        Optional<MemberChat> result = memberChatRepository.findByMember_IdAndChat_id(memberId, chatId);
+        return result.isPresent();
     }
 
 

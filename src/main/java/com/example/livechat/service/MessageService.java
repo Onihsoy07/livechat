@@ -8,9 +8,13 @@ import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.entity.Chat;
+import com.example.livechat.exception.NotContainsUserChat;
+import com.example.livechat.repository.MemberChatRepository;
 import com.example.livechat.repository.MessageRepository;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +30,23 @@ public class MessageService {
     private final MemberService memberService;
     private final MessageRepository messageRepository;
     private final ChatService chatService;
+    private final MemberChatService memberChatService;
     private final JwtProvider jwtProvider;
-//    private final RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
 
-    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, String token) {
+    public void messageResolver(MessageSaveDto messageSaveDto, String token) {
+        Member sender = jwtProvider.getMember(token);
+
+        if (!memberChatService.checkMyChat(messageSaveDto.getChatId(), sender.getId())) {
+            throw new NotContainsUserChat("해당 유저는 이 채팅방에 없습니다.");
+        }
+
+        saveMessage(messageSaveDto, sender);
+
+    }
+
+    public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, Member sender) {
         Chat chat = chatService.getChatEntity(messageSaveDto.getChatId());
-
-        String jwtToken = token.substring(7);
-
-        Member sender = ((PrincipalDetails) jwtProvider.getAuthentication(jwtToken).getPrincipal()).getMember();
 
         Message message = Message.builder()
                 .sender(sender)
