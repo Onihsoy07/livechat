@@ -26,18 +26,18 @@ public class SocketController {
     private final MessageService messageService;
     private final RedisPublisher redisPublisher;
 
-    @MessageMapping("/api/chat/{chatId}")
-    @SendTo("/send")
-    public MessagePushRedisDto sendMessage(MessageSaveDto messageSaveDto,
-                                           @DestinationVariable("chatId") Long chatId,
-                                           @Header("Authentication") String token) {
-        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, token);
-
+//    @MessageMapping("/api/chat/{chatId}")
+//    @SendTo("/send")
+//    public MessagePushRedisDto sendMessage(MessageSaveDto messageSaveDto,
+//                                           @DestinationVariable("chatId") Long chatId,
+//                                           @Header("Authentication") String token) {
+//        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, token);
+//
 //        log.info("messagePushRedisDto : {}", messagePushRedisDto);
-
+//
 //        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
 //        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
-        return messagePushRedisDto;
-    }
+//        return messagePushRedisDto;
+//    }
 
 }
