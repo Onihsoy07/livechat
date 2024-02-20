@@ -2,6 +2,7 @@ package com.example.livechat.auth;
 
 import com.example.livechat.domain.constant.JwtConst;
 import com.example.livechat.domain.dto.MemberDto;
+import com.example.livechat.domain.entity.Member;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -68,6 +69,13 @@ public class JwtProvider implements InitializingBean {
         PrincipalDetails principal = (PrincipalDetails) principalDetailsService.loadUserByUsername(claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public Member getMember(String token) {
+        Authentication authentication = getAuthentication(token);
+        Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
+
+        return member;
     }
 
     public boolean validateToken(String token) {
