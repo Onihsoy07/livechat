@@ -57,7 +57,7 @@ const connect = () => {
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/send", 
+                "/sub", 
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
@@ -84,7 +84,7 @@ const sendMessage = () => {
             message: data.message
         });
         console.log(body);
-        ws.send("/api/chat/" + chatId.value, body, defaultJwtHeader);
+        ws.send("/pub/api/message", body, defaultJwtHeader);
     }
 
     data.message = '';
