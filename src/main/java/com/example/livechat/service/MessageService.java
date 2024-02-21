@@ -11,10 +11,12 @@ import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.exception.NotContainsUserChat;
 import com.example.livechat.repository.MemberChatRepository;
 import com.example.livechat.repository.MessageRepository;
+import com.example.livechat.service.redis.RedisPublisher;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +34,11 @@ public class MessageService {
     private final ChatService chatService;
     private final MemberChatService memberChatService;
     private final JwtProvider jwtProvider;
-    private final RedisTemplate redisTemplate;
+//    private final RedisTemplate redisTemplate;
+    private final RedisPublisher redisPublisher;
 
-    public void messageResolver(MessageSaveDto messageSaveDto, String token) {
+    public void messageResolver(MessageSaveDto messageSaveDto, String jwtToken) {
+        String token = jwtToken.substring(7);
         Member sender = jwtProvider.getMember(token);
 
         if (!memberChatService.checkMyChat(messageSaveDto.getChatId(), sender.getId())) {
@@ -58,7 +62,8 @@ public class MessageService {
 
         MessagePushRedisDto messagePushRedisDto = new MessagePushRedisDto(message);
 
-//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
+//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + messageSaveDto.getChatId()).getTopic(), messagePushRedisDto);
+        redisPublisher.publisher(ChannelTopic.of("chat" + messageSaveDto.getChatId()), messagePushRedisDto);
 
         return messagePushRedisDto;
     }

@@ -16,13 +16,13 @@ public class MessagePushRedisDto {
     private String contents;
     private MemberDto sender;
     private ChatDto chatDto;
-    private LocalDateTime createDate;
+    private String createDate;
 
     public MessagePushRedisDto(Message message) {
         this.id = message.getId();
         this.contents = message.getContents();
         this.sender = new MemberDto(message.getSender());
         this.chatDto = new ChatDto(message.getChat());
-        this.createDate = message.getCreateAt();
+        this.createDate = message.getCreateAt().toString();
     }
 }
