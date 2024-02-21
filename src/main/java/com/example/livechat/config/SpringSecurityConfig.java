@@ -51,6 +51,7 @@ public class SpringSecurityConfig {
                     authorize
                             .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()
+                            .requestMatchers(new AntPathRequestMatcher("/pub/**")).authenticated()
                             .anyRequest().permitAll();
                 })
                 .addFilterBefore(
