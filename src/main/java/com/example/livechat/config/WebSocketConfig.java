@@ -32,11 +32,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 클라이언트 메시지 구독하는 endpoint
-        registry.enableSimpleBroker("/send");
-
-        // 클라이언트 -> 서버 메시지 endpoint
-//        registry.setApplicationDestinationPrefixes("/pub");
+        // sub 로 보내면 이곳을 한번 거쳐서 프론트에 데이터를 전달해준다.
+        registry.enableSimpleBroker("/sub");
+        // pub 로 데이터를 받으면 이곳을 한번 거쳐서 URI 만 MessageMapping 에 매핑이 된다.
+        // 요청이 오면 /pub 를 제외하고 @MessageMapping로 매핑한다.
+        registry.setApplicationDestinationPrefixes("/pub");
     }
 
     @Override
