@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -56,21 +57,5 @@ public class MessageApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);
     }
 
-
-    /*
-    @MessageMapping("/receive")
-    @SendTo("/send")
-    public MessageSaveDto sendMessage(MessageSaveDto messageSaveDto) {
-        Long chatId = messageSaveDto.getChatId();
-
-//        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member, chatId);
-
-//        log.info("messagePushRedisDto : {}", messagePushRedisDto);
-
-//        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
-//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
-        return messageSaveDto;
-    }
-    */
 
 }

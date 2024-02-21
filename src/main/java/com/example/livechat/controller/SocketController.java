@@ -40,4 +40,19 @@ public class SocketController {
 //        return messagePushRedisDto;
 //    }
 
+    @MessageMapping("/api/message")
+    public void sendMessage(MessageSaveDto messageSaveDto,
+                            @Header("Authentication") String token) {
+//        Long chatId = messageSaveDto.getChatId();
+
+//        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member, chatId);
+
+//        log.info("messagePushRedisDto : {}", messagePushRedisDto);
+
+//        redisPublisher.publisher(ChannelTopic.of("chat" + chatId), messagePushRedisDto);
+//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
+
+        messageService.messageResolver(messageSaveDto, token);
+    }
+
 }
