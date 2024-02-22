@@ -72,7 +72,9 @@ public class JwtProvider implements InitializingBean {
     }
 
     public Member getMember(String token) {
-        Authentication authentication = getAuthentication(token);
+        String jwtToken = token.substring(7);
+
+        Authentication authentication = getAuthentication(jwtToken);
         Member member = ((PrincipalDetails) authentication.getPrincipal()).getMember();
 
         return member;

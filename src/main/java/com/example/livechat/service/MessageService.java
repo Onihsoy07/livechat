@@ -1,7 +1,6 @@
 package com.example.livechat.service;
 
 import com.example.livechat.auth.JwtProvider;
-import com.example.livechat.auth.PrincipalDetails;
 import com.example.livechat.domain.dto.MessageDto;
 import com.example.livechat.domain.dto.MessagePushRedisDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
@@ -9,13 +8,10 @@ import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.exception.NotContainsUserChat;
-import com.example.livechat.repository.MemberChatRepository;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +34,7 @@ public class MessageService {
     private final RedisPublisher redisPublisher;
 
     public void messageResolver(MessageSaveDto messageSaveDto, String jwtToken) {
-        String token = jwtToken.substring(7);
-        Member sender = jwtProvider.getMember(token);
+        Member sender = jwtProvider.getMember(jwtToken);
 
         if (!memberChatService.checkMyChat(messageSaveDto.getChatId(), sender.getId())) {
             throw new NotContainsUserChat("해당 유저는 이 채팅방에 없습니다.");
