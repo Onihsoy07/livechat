@@ -41,7 +41,7 @@ public class SocketController {
 //    }
 
     @MessageMapping("/api/message")
-    public void sendMessage(MessageSaveDto messageSaveDto,
+    public MessageSaveDto sendMessage(MessageSaveDto messageSaveDto,
                             @Header("Authentication") String token) {
 //        Long chatId = messageSaveDto.getChatId();
 
@@ -53,6 +53,8 @@ public class SocketController {
 //        redisTemplate.convertAndSend(ChannelTopic.of("chat" + chatId).getTopic(), messagePushRedisDto);
 
         messageService.messageResolver(messageSaveDto, token);
+
+        return messageSaveDto;
     }
 
 }

@@ -32,6 +32,7 @@ public class MessageService {
     private final JwtProvider jwtProvider;
 //    private final RedisTemplate redisTemplate;
     private final RedisPublisher redisPublisher;
+    private final ChannelTopic channelTopic;
 
     public void messageResolver(MessageSaveDto messageSaveDto, String jwtToken) {
         Member sender = jwtProvider.getMember(jwtToken);
@@ -58,7 +59,8 @@ public class MessageService {
         MessagePushRedisDto messagePushRedisDto = new MessagePushRedisDto(message);
 
 //        redisTemplate.convertAndSend(ChannelTopic.of("chat" + messageSaveDto.getChatId()).getTopic(), messagePushRedisDto);
-        redisPublisher.publisher(ChannelTopic.of("chat" + messageSaveDto.getChatId()), messagePushRedisDto);
+//        redisPublisher.publisher(ChannelTopic.of("chat" + messageSaveDto.getChatId()), messagePushRedisDto);
+        redisPublisher.publisher(channelTopic, messagePushRedisDto);
 
         return messagePushRedisDto;
     }

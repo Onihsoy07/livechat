@@ -1,5 +1,6 @@
 package com.example.livechat.config;
 
+import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.service.redis.RedisSubscriber;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,11 +42,10 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisMessageListenerContainer redisMessageListener(MessageListenerAdapter messageListenerAdapter,
-                                                              ChannelTopic channelTopic){
+    public RedisMessageListenerContainer redisMessageListener(MessageListenerAdapter messageListenerAdapter){
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory());
-        container.addMessageListener(messageListenerAdapter, channelTopic);
+        container.addMessageListener(messageListenerAdapter, channelTopic());
 
         return container;
     }
@@ -59,13 +59,5 @@ public class RedisConfig {
 
         return redisTemplate;
     }
-
-    // redis pub/sub 메세지를 처리하는 listener 설정
-//    @Bean
-//    public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory) {
-//        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-//        container.setConnectionFactory(connectionFactory);
-//        return container;
-//    }
 
 }
