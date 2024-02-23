@@ -57,7 +57,7 @@ const connect = () => {
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/sub/chats/" + chatId.value, 
+                "/sub/chat/" + chatId.value, 
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
