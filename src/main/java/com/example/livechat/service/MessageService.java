@@ -26,11 +26,10 @@ import java.util.List;
 public class MessageService {
 
     private final MemberService memberService;
-    private final MessageRepository messageRepository;
     private final ChatService chatService;
+    private final MessageRepository messageRepository;
     private final MemberChatService memberChatService;
     private final JwtProvider jwtProvider;
-//    private final RedisTemplate redisTemplate;
     private final RedisPublisher redisPublisher;
     private final ChannelTopic channelTopic;
 
@@ -41,8 +40,9 @@ public class MessageService {
             throw new NotContainsUserChat("해당 유저는 이 채팅방에 없습니다.");
         }
 
-        saveMessage(messageSaveDto, sender);
+        chatService.enterChat(messageSaveDto.getChatId());
 
+        saveMessage(messageSaveDto, sender);
     }
 
     public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, Member sender) {
@@ -58,8 +58,6 @@ public class MessageService {
 
         MessagePushRedisDto messagePushRedisDto = new MessagePushRedisDto(message);
 
-//        redisTemplate.convertAndSend(ChannelTopic.of("chat" + messageSaveDto.getChatId()).getTopic(), messagePushRedisDto);
-//        redisPublisher.publisher(ChannelTopic.of("chat" + messageSaveDto.getChatId()), messagePushRedisDto);
         redisPublisher.publisher(channelTopic, messagePushRedisDto);
 
         return messagePushRedisDto;
