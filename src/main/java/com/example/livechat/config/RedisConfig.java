@@ -32,22 +32,23 @@ public class RedisConfig {
     }
 
     @Bean
-    public ChannelTopic channelTopic(){
-        return new ChannelTopic("chatroom");
-    }
-
-    @Bean
     public MessageListenerAdapter messageListenerAdapter(RedisSubscriber redisSubscriber){
         return new MessageListenerAdapter(redisSubscriber, "sendMessage");
     }
 
     @Bean
-    public RedisMessageListenerContainer redisMessageListener(MessageListenerAdapter messageListenerAdapter){
+    public RedisMessageListenerContainer redisMessageListener(MessageListenerAdapter messageListenerAdapter,
+                                                              ChannelTopic channelTopic){
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory());
-        container.addMessageListener(messageListenerAdapter, channelTopic());
+        container.addMessageListener(messageListenerAdapter, channelTopic);
 
         return container;
+    }
+
+    @Bean
+    public ChannelTopic channelTopic() {
+        return new ChannelTopic("chat");
     }
 
     @Bean @Primary
