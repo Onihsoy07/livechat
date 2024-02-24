@@ -96,8 +96,9 @@ export default createStore({
                 console.log(error);
             });
         },
-        CLEAR_CHATID(state) {
+        CLEAR_CHAT(state) {
             state.currentChatId = null;
+            state.messageContentList = [];
         }
     },
     getters: {
