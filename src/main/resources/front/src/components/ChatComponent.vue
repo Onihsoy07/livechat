@@ -104,6 +104,8 @@ onMounted(() => {
     border: 1px solid gray;
     width: 100%;
     height: 400px;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 .message-box-wrap {
     border: 1px solid gray;
