@@ -45,14 +45,14 @@
     <div class="chat-outer">
         <ChatCollection></ChatCollection>
     
-        <ChatComponent v-if="chatId"></ChatComponent>
+        <ChatComponent v-if="data.chatComponentKey"></ChatComponent>
     </div>
 
 </template>
 
 <script setup>
 import axios from 'axios';
-import { reactive, computed } from 'vue';
+import { reactive, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import ChatCollection from './ChatCollection.vue';
 import ChatComponent from './ChatComponent.vue';
@@ -60,7 +60,16 @@ import ChatComponent from './ChatComponent.vue';
 const store = useStore();
 const chatId = computed(() => store.state.currentChatId);
 
+watch(chatId, () => {
+    data.chatComponentKey = 0;
+    setTimeout(() => {
+        data.chatComponentKey++;
+    }, 10);
+});
+
+
 const data = reactive({
+    chatComponentKey: 0,
     isChatDetailOpen: false,
     isChatSearchOpen: false,
     chatName: '',
