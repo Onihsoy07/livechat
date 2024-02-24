@@ -1,6 +1,6 @@
 <template>
     <div class="chat-wrap">
-        <div class="chat-contents-wrap">
+        <div class="chat-contents-wrap" ref="messageWrap">
             <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
                 <div class="message-user">
                     {{ messageData.sender.username }}
@@ -9,8 +9,13 @@
                     {{ messageData.contents }}
                 </div>
             </div>
-            <div v-for="(messageDto, idx) in data.messageList" :key="idx">
-                <div>{{ messageDto }}</div>      
+            <div class="chat-contents" v-for="(messageDto, idx) in data.messageList" :key="idx">
+                <div class="message-user">
+                    {{ messageDto.sender.username }}
+                </div>
+                <div class="message-contents">
+                    {{ messageDto.contents }}
+                </div>
             </div>
         </div>
         <div class="message-box-wrap">
@@ -23,9 +28,8 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted } from "vue";
+import { reactive, computed, watch, onMounted, onUnmounted, ref } from "vue";
 import { useStore } from "vuex";
-// import axios from "axios";
 import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
 
@@ -41,11 +45,28 @@ const data = reactive({
 });
 const messageContentList = computed(() => store.state.messageContentList);
 const chatId = computed(() => store.state.currentChatId);
+const messageWrap = ref(null);
 
 const defaultJwtHeader = {
-    // 'Content-Type': 'application/json',
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
+
+watch(data.messageList, () => {
+    messageWrapScrollDown();
+});
+
+// watch(chatId, () => {
+//     ws.unsubscribe("", defaultJwtHeader);
+//     ws.subscribe(
+//         "/sub/chat/" + chatId.value, 
+//         res => {
+//             console.log('구독으로 받은 메시지 입니다.', res);
+//             console.log('body', res.body);
+//             data.messageList.push(JSON.parse(res.body));
+//         },
+//         defaultJwtHeader
+//     );
+// });
 
 
 const connect = () => {
@@ -61,14 +82,14 @@ const connect = () => {
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
-                    data.messageList.push(res.body);
+                    data.messageList.push(JSON.parse(res.body));
                 },
                 defaultJwtHeader
             );
         },
         error => {
         console.log('소켓 연결 실패', error);
-        } 
+        }
     );
 };
 const sendMessage = () => {
@@ -89,10 +110,17 @@ const sendMessage = () => {
 
     data.message = '';
 };
+const messageWrapScrollDown = () => {
+    messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
+};
 
 
 onMounted(() => {
     connect();
+    messageWrapScrollDown();
+});
+onUnmounted(() => {
+    store.commit("CLEAR_CHAT");
 });
 </script>
 
