@@ -12,7 +12,9 @@
           <router-link to="/chat" class="router-link">
             <p>채팅</p>
           </router-link>
-          <button @click="memberDetail" class="btn-nav btn-logout">{{ username }}</button>
+          <router-link to="/user" class="router-link">
+            <p>{{ username }}</p>
+          </router-link>
           <button @click="logout" class="btn-nav btn-logout">로그아웃</button>
         </div>
 
@@ -44,9 +46,6 @@ const username = computed(() => store.state.username);
 const logout = () => {
   store.commit('SET_LOGOUT');
   router.push('/');
-};
-const memberDetail = () => {
-  //추후 구현
 };
 
 
@@ -101,9 +100,7 @@ onMounted(() => {
   font-size: 16px;
   padding: 0px 10px;
 }
-/* .btn-member-detail {
-  
-}
+/*
 .btn-logout {
 
 } */

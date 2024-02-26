@@ -100,7 +100,6 @@ const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
 };
 const isMessageWrapScrollBottom = () => {
-    console.log(messageWrap.value.innerHeight);
     return messageWrap.value.scrollTop === messageWrap.value.scrollHeight;
 };
 

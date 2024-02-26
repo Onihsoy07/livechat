@@ -33,6 +33,12 @@ const router = createRouter({
             component: () => import("@/components/ChatHome.vue"),
             beforeEnter: requireAuth(),
         },
+        {
+            path: "/user",
+            name: "userReCheck",
+            component: () => import("@/components/AuthCheck.vue"),
+            beforeEnter: requireAuth(),
+        },
 
     ]
 });
