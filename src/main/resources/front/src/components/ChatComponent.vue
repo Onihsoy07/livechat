@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, watch, onMounted, onUnmounted, ref } from "vue";
+import { reactive, computed, onMounted, onUnmounted, onUpdated,  ref } from "vue";
 import { useStore } from "vuex";
 import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
@@ -40,6 +40,8 @@ const ws = Stomp.over(sock);
 const store = useStore();
 
 const data = reactive({
+    initCheck: true,
+    newMessageCheck: false,
     message: '',
     messageList: [],
 });
@@ -50,23 +52,6 @@ const messageWrap = ref(null);
 const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
-
-watch(data.messageList, () => {
-    messageWrapScrollDown();
-});
-
-// watch(chatId, () => {
-//     ws.unsubscribe("", defaultJwtHeader);
-//     ws.subscribe(
-//         "/sub/chat/" + chatId.value, 
-//         res => {
-//             console.log('구독으로 받은 메시지 입니다.', res);
-//             console.log('body', res.body);
-//             data.messageList.push(JSON.parse(res.body));
-//         },
-//         defaultJwtHeader
-//     );
-// });
 
 
 const connect = () => {
@@ -83,12 +68,13 @@ const connect = () => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
                     data.messageList.push(JSON.parse(res.body));
+                    data.newMessageCheck = true;
                 },
                 defaultJwtHeader
             );
         },
         error => {
-        console.log('소켓 연결 실패', error);
+            console.log('소켓 연결 실패', error);
         }
     );
 };
@@ -113,11 +99,27 @@ const sendMessage = () => {
 const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
 };
+const isMessageWrapScrollBottom = () => {
+    console.log(messageWrap.value.innerHeight);
+    return messageWrap.value.scrollTop === messageWrap.value.scrollHeight;
+};
 
 
 onMounted(() => {
     connect();
     messageWrapScrollDown();
+});
+onUpdated(() => {
+    if (data.initCheck) {
+        messageWrapScrollDown();
+        data.initCheck = false;
+    }
+    if (data.newMessageCheck) {
+        messageWrapScrollDown();
+        data.newMessageCheck = false;
+    }
+
+    isMessageWrapScrollBottom();
 });
 onUnmounted(() => {
     store.commit("CLEAR_CHAT");
