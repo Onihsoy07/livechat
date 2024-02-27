@@ -1,13 +1,10 @@
 <template>
     <div>
-        <div>비밀번호 확인</div>
-        <div>{{ route.params.id }}</div>
+        <div class="auth-title">비밀번호 확인</div>
         <div>
-            <label for="password">password</label>
-            <input type="password" v-model="data.password" />
-        </div>
-        <div>
-            <button @click="passwordCheck()">확인</button>
+            <label for="password" class="auth-label">password :</label>
+            <input type="password" class="auth-input" v-model="data.password" />
+            <button @click="passwordCheck()" class="btn">확인</button>
         </div>
     </div>
 </template>
@@ -15,9 +12,9 @@
 <script setup>
 import axios from "axios";
 import { reactive } from "vue";
-import { useRoute } from "vue-router";
+import { useRouter } from "vue-router";
 
-const route = useRoute();
+const router = useRouter();
 
 const data = reactive({
     password: '',
@@ -27,14 +24,22 @@ const data = reactive({
 const passwordCheck = () => {
     axios({
         method: 'post',
-        url: '/api/memeber', 
+        url: '/api/members/recheck', 
         data: JSON.stringify({
             password: data.password,
         }),
         headers: {
+            'Content-Type': 'application/json',
             'Authentication': 'Bearer ' + window.localStorage.getItem('token')
         }
     }).then((res) => {
+        if (res.data.success) {
+            let memberId = res.data.data;
+            router.push('/user/' + memberId);
+        } else {
+            data.password = '';
+            alert(res.data.message);
+        }
         console.log(res);
     }).catch((error) => {
         console.log(error);
