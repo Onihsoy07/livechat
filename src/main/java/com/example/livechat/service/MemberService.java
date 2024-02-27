@@ -1,12 +1,10 @@
 package com.example.livechat.service;
 
 import com.example.livechat.auth.JwtProvider;
-import com.example.livechat.domain.dto.MemberDto;
-import com.example.livechat.domain.dto.MemberLoginDto;
-import com.example.livechat.domain.dto.MemberSaveDto;
-import com.example.livechat.domain.dto.TokenDto;
+import com.example.livechat.domain.dto.*;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.enumerate.Role;
+import com.example.livechat.exception.NotMatchMemberPasswordException;
 import com.example.livechat.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-// 트랜잭션 사용하지 않는 매서드가 있음
-// 사용하면 아래 DEBUG 발생
-// Closing JPA EntityManager [SessionImpl(1498918044<open>)] after transaction
-// Not closing pre-bound JPA EntityManager after transaction
-//@Transactional
+@Transactional
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -69,6 +63,18 @@ public class MemberService {
         }
 
         return token;
+    }
+
+    @Transactional(readOnly = true)
+    public Long passwordCheck(MemberPasswordCheckDto memberPasswordCheckDto, Member member) {
+        String memberPassword = member.getPassword();
+        String memberCheckPassword = memberPasswordCheckDto.getPassword();
+
+        if (bCryptPasswordEncoder.matches(memberCheckPassword, memberPassword)) {
+            return member.getId();
+        }
+
+        throw new NotMatchMemberPasswordException("비밀번호가 다릅니다.");
     }
 
     public Boolean tokenAvailableCheck(TokenDto tokenDto) {
