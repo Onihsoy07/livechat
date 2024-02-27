@@ -61,6 +61,7 @@ const store = useStore();
 const chatId = computed(() => store.state.currentChatId);
 
 watch(chatId, () => {
+    store.commit("SET_ISCHATCHANGE", true);
     data.chatComponentKey = 0;
     setTimeout(() => {
         data.chatComponentKey++;

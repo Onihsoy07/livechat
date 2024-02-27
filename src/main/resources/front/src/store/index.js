@@ -17,6 +17,7 @@ export default createStore({
         username: '',
         currentChatId: null,
         messageContentList: [],
+        isChatChange: false,
 
     },
     mutations: {
@@ -99,6 +100,9 @@ export default createStore({
         CLEAR_CHAT(state) {
             state.currentChatId = null;
             state.messageContentList = [];
+        },
+        SET_ISCHATCHANGE(state, changeResult) {
+            state.isChatChange = changeResult;
         }
     },
     getters: {

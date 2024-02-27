@@ -53,7 +53,7 @@ const data = reactive({
 });
 
 const messageContentList = computed(() => store.state.messageContentList);
-// const props.chatId = props.props.chatId;
+const isChatChange = computed(() => store.state.isChatChange);
 const messageWrap = ref(null);
 
 const defaultJwtHeader = {
@@ -114,13 +114,10 @@ const isMessageWrapScrollBottom = () => {
 
 
 onMounted(() => {
-    console.log("*********reeeeeeeeeeeeeeeeeeeee");
-    console.log(props.chatId);
     connect();
     messageWrapScrollDown();
 });
 onUpdated(() => {
-    console.log(props.chatId);
     if (data.initCheck) {
         messageWrapScrollDown();
         data.initCheck = false;
@@ -134,7 +131,11 @@ onUpdated(() => {
 });
 onUnmounted(() => {
     ws.disconnect();
-    store.commit("CLEAR_CHAT");
+    if (!isChatChange.value) {
+        console.log("대화방 ID 초기화!!!");
+        store.commit("CLEAR_CHAT");
+    }
+    store.commit("SET_ISCHATCHANGE", false);
 });
 </script>
 
