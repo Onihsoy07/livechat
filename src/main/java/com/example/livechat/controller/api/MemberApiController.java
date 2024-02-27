@@ -37,5 +37,17 @@ public class MemberApiController {
     }
 
 
+    @GetMapping("/{memberId}")
+    public HttpResponseDto<MemberDto> getMemberInfo(@PathVariable("memberId") final Long memberId,
+                                                    @CurrentMember final Member member) {
+        if (member.getId() == memberId) {
+            MemberDto memberDto = new MemberDto(member);
+            return new HttpResponseDto<>(HttpStatus.OK.value(), true, "유저 정보 조회", memberDto);
+        }
+        // 유저 PK값을 알 수 있기 때문에 404로 응답 수정
+//            return new HttpResponseDto<>(HttpStatus.FORBIDDEN.value(), false, "권한 없음", null);
+        return new HttpResponseDto<>(HttpStatus.NOT_FOUND.value(), false, "페이지 없음", null);
+    }
+
 
 }
