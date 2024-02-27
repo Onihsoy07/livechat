@@ -35,11 +35,16 @@ const router = createRouter({
         },
         {
             path: "/user",
-            name: "userReCheck",
+            name: "memberCheck",
             component: () => import("@/components/AuthCheck.vue"),
             beforeEnter: requireAuth(),
         },
-
+        {
+            path: "/user/:id",
+            name: "memberDetail",
+            component: () => import("@/components/AuthDetail.vue"),
+            beforeEnter: requireAuth(),
+        },
     ]
 });
 
