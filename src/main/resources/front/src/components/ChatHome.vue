@@ -45,7 +45,7 @@
     <div class="chat-outer">
         <ChatCollection></ChatCollection>
     
-        <ChatComponent v-if="data.chatComponentKey"></ChatComponent>
+        <ChatComponent v-if="data.chatComponentKey" :chat-id="chatId"></ChatComponent>
     </div>
 
 </template>
@@ -64,7 +64,7 @@ watch(chatId, () => {
     data.chatComponentKey = 0;
     setTimeout(() => {
         data.chatComponentKey++;
-    }, 10);
+    }, 1);
 });
 
 

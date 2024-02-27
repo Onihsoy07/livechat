@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted, onUnmounted, onUpdated,  ref } from "vue";
+import { reactive, computed, onMounted, onUnmounted, onUpdated,  ref, defineProps } from "vue";
 import { useStore } from "vuex";
 import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
@@ -39,14 +39,21 @@ const ws = Stomp.over(sock);
 
 const store = useStore();
 
+const props = defineProps({
+    chatId: {
+        type: Number,
+        required: true
+    }
+});
 const data = reactive({
     initCheck: true,
     newMessageCheck: false,
     message: '',
     messageList: [],
 });
+
 const messageContentList = computed(() => store.state.messageContentList);
-const chatId = computed(() => store.state.currentChatId);
+// const props.chatId = props.props.chatId;
 const messageWrap = ref(null);
 
 const defaultJwtHeader = {
@@ -58,12 +65,13 @@ const connect = () => {
     console.log('sock', sock);
     console.log('ws', ws);
     console.log("connect");
+    console.log(props.chatId);
     ws.connect(
         defaultJwtHeader,
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/sub/chat/" + chatId.value, 
+                "/sub/chat/" + props.chatId, 
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
@@ -80,14 +88,14 @@ const connect = () => {
 };
 const sendMessage = () => {
     console.log('sendMessage');
-    if (data.message == '' || chatId.value == null) {
+    if (data.message == '' || props.chatId == null) {
         return;
     }
 
     console.log('ws 전송 시작');
     if (ws && ws.connected) {
         const body = JSON.stringify({
-            chatId: chatId.value,
+            chatId: props.chatId,
             message: data.message
         });
         console.log(body);
@@ -95,6 +103,7 @@ const sendMessage = () => {
     }
 
     data.message = '';
+    ws.co
 };
 const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
@@ -105,10 +114,13 @@ const isMessageWrapScrollBottom = () => {
 
 
 onMounted(() => {
+    console.log("*********reeeeeeeeeeeeeeeeeeeee");
+    console.log(props.chatId);
     connect();
     messageWrapScrollDown();
 });
 onUpdated(() => {
+    console.log(props.chatId);
     if (data.initCheck) {
         messageWrapScrollDown();
         data.initCheck = false;
@@ -121,6 +133,7 @@ onUpdated(() => {
     isMessageWrapScrollBottom();
 });
 onUnmounted(() => {
+    ws.disconnect();
     store.commit("CLEAR_CHAT");
 });
 </script>
