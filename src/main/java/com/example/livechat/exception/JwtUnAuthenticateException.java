@@ -1,5 +1,6 @@
 package com.example.livechat.exception;
 
+// JWT 토큰 사용 불가(기한 지남, 토큰 없음)
 public class JwtUnAuthenticateException extends RuntimeException {
 
     public JwtUnAuthenticateException(String message) {

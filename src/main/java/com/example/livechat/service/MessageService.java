@@ -7,7 +7,7 @@ import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.entity.Chat;
-import com.example.livechat.exception.NotContainsUserChat;
+import com.example.livechat.exception.NotContainsUserChatException;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class MessageService {
         Member sender = jwtProvider.getMember(jwtToken);
 
         if (!memberChatService.checkMyChat(messageSaveDto.getChatId(), sender.getId())) {
-            throw new NotContainsUserChat("해당 유저는 이 채팅방에 없습니다.");
+            throw new NotContainsUserChatException("해당 유저는 이 채팅방에 없습니다.");
         }
 
         chatService.enterChat(messageSaveDto.getChatId());
