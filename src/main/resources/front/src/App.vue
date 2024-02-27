@@ -109,5 +109,15 @@ onMounted(() => {
   cursor: pointer;
   background-color: #A6A6A6;
 }
+.auth-title {
+    font-size: 30px;
+    margin: 15px;
+}
+.auth-label {
+    margin-right: 10px;
+}
+.auth-input {
+    margin-right: 10px;
+}
 
 </style>
