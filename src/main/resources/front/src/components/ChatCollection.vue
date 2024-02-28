@@ -26,10 +26,6 @@ onMounted(() => {
     axios({
         method: 'get',
         url: '/api/chat/' + store.state.username,
-        data: JSON.stringify({
-            chatName: data.chatName,
-            isOpenChat: data.setOpenChat,
-        }),
         headers: {
             'Content-Type': 'application/json',
             'Authentication': 'Bearer ' + window.localStorage.getItem('token')
