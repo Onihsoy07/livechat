@@ -38,4 +38,8 @@ public class Member extends Base {
         this.role = role;
     }
 
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
 }
