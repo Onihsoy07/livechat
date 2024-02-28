@@ -5,12 +5,12 @@
             <input type="text" v-model="data.username" class="auth-input" disabled="true" />
         </div>
         <div>
-            <label for="username" class="auth-label">비밀번호 : </label>
-            <input type="text" v-model="data.username" class="auth-input" disabled="true" />
+            <label for="password" class="auth-label">비밀번호 : </label>
+            <input type="password" v-model="data.password" class="auth-input" />
         </div>
         <div>
-            <label for="username" class="auth-label">비밀번호 재확인 : </label>
-            <input type="text" v-model="data.username" class="auth-input" disabled="true" />
+            <label for="passwordCheck" class="auth-label">비밀번호 재확인 : </label>
+            <input type="password" v-model="data.passwordCheck" class="auth-input" />
         </div>
         <button @click="passwordUpdate()">수정</button>
     </div>
@@ -26,6 +26,8 @@ const router = useRouter();
 
 const data = reactive({
     username: null,
+    password: '',
+    passwordCheck: ''
 });
 const memberId = route.params.id;
 
@@ -34,6 +36,10 @@ const passwordUpdate = () => {
     axios({
         method: 'patch',
         url: '/api/members/' + memberId,
+        data: JSON.stringify({
+            'password': data.password,
+            'passwordCheck': data.passwordCheck
+        }),
         headers: {
             'Content-Type': 'application/json',
             'Authentication': 'Bearer ' + window.localStorage.getItem('token')
@@ -41,8 +47,11 @@ const passwordUpdate = () => {
     }).then((res) => {
         console.log(res);
         if (res.data.success) {
-            data.username = res.data.data.username;
+            alert(res.data.message);
+            router.push('/');
         } else {
+            data.password = '';
+            data.passwordCheck = '';
             alert(res.data.message);
         }
     }).catch((error) => {
