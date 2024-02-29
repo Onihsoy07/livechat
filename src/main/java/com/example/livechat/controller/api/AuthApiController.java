@@ -1,5 +1,6 @@
 package com.example.livechat.controller.api;
 
+import com.example.livechat.auth.JwtProvider;
 import com.example.livechat.domain.dto.*;
 import com.example.livechat.service.MemberService;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApiController {
 
     private final MemberService memberService;
+    private final JwtProvider jwtProvider;
 
     @PostMapping("/register")
     public HttpResponseDto<?> saveMember(@RequestBody @Valid MemberSaveDto memberSaveDto,
@@ -55,7 +57,7 @@ public class AuthApiController {
             return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "토큰 없음", null);
         }
 
-        Boolean tokenAvailable = memberService.tokenAvailableCheck(tokenDto);
+        Boolean tokenAvailable = jwtProvider.validateToken(tokenDto.getToken());
 
         if (tokenAvailable) {
             return new HttpResponseDto<>(HttpStatus.OK.value(), true, "유효한 토큰", null);

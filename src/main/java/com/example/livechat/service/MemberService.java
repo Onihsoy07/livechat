@@ -100,12 +100,6 @@ public class MemberService {
         updatePrincipal(memberEntity.getUsername(), password);
     }
 
-    public Boolean tokenAvailableCheck(TokenDto tokenDto) {
-        boolean tokenAvailable = jwtProvider.validateToken(tokenDto.getToken());
-
-        return tokenAvailable;
-    }
-
     @Transactional(readOnly = true)
     public MemberDto getMember(String username) {
         return new MemberDto(getMemberByUsername(username));
