@@ -22,6 +22,8 @@
             <div class="message-box">
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
+                <button @click="sendFile">파일</button>
+                <input type="file" ref="fileMessage" @change="sendFile()" />
             </div>
         </div>
     </div>
@@ -32,6 +34,7 @@ import { reactive, computed, onMounted, onUnmounted, onUpdated,  ref, defineProp
 import { useStore } from "vuex";
 import Stomp from 'webstomp-client';
 import SockJS from "sockjs-client";
+import axios from "axios";
 
 
 const sock = new SockJS("http://localhost:8080/ws/chat");
@@ -55,6 +58,7 @@ const data = reactive({
 const messageContentList = computed(() => store.state.messageContentList);
 const isChatChange = computed(() => store.state.isChatChange);
 const messageWrap = ref(null);
+const fileMessage = ref(null);
 
 const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
@@ -71,7 +75,7 @@ const connect = () => {
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/sub/chat/" + props.chatId, 
+                "/sub/chat/" + props.chatId,
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
@@ -103,7 +107,37 @@ const sendMessage = () => {
     }
 
     data.message = '';
-    ws.co
+};
+const sendFile = () => {
+    const formData = new FormData();
+    const file = fileMessage.value.files[0];
+    formData.append('file', file);
+    console.log(file);
+
+    axios({
+        method: 'post',
+        url: '/api/attachs', 
+        data: formData,
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+        }
+    }).then((res) => {
+        if (res.data.success) {
+            console.log(res);
+        } else {
+            console.log(res.data);
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+
+
+    // console.log('ws 전송 시작');
+    // if (ws && ws.connected) {
+    //     ws.send("/pub/api/message", body, defaultJwtHeader);
+    // }
 };
 const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
@@ -130,7 +164,7 @@ onUpdated(() => {
     isMessageWrapScrollBottom();
 });
 onUnmounted(() => {
-    ws.disconnect();
+    ws.disconnect(null, defaultJwtHeader);
     if (!isChatChange.value) {
         console.log("대화방 ID 초기화!!!");
         store.commit("CLEAR_CHAT");
