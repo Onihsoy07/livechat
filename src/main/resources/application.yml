@@ -19,6 +19,9 @@ server:
     whitelabel:
       enabled: false
 
+file:
+  dir: H:/java/file/
+
 logging:
   level:
     org:

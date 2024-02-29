@@ -42,7 +42,7 @@ public class SocketController {
 
     @MessageMapping("/api/message")
     public MessageSaveDto sendMessage(MessageSaveDto messageSaveDto,
-                            @Header("Authentication") String token) {
+                                      @Header("Authentication") String token) {
 //        Long chatId = messageSaveDto.getChatId();
 
 //        MessagePushRedisDto messagePushRedisDto = messageService.saveMessage(messageSaveDto, member, chatId);

@@ -2,6 +2,7 @@ package com.example.livechat.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,11 @@ public class Attach extends Base {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
+    @Builder
+    public Attach(String uploadFileName, String storeFileName) {
+        this.uploadFileName = uploadFileName;
+        this.storeFileName = storeFileName;
+        this.sender = null;
+        this.chat = null;
+    }
 }

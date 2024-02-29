@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -16,5 +17,7 @@ public class MessageSaveDto {
 
     @NotBlank(message = "대화 내용이 존재하지 않습니다.")
     private String message;
+
+    private MultipartFile multipartFile;
 
 }

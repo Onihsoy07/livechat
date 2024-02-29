@@ -1,6 +1,5 @@
 package com.example.livechat.handler;
 
-import com.example.livechat.domain.dto.MessageDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
