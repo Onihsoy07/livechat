@@ -22,7 +22,7 @@
             <div class="message-box">
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
-                <button @click="sendFile">파일</button>
+                <button @click="downloadFile">파일다운</button>
                 <input type="file" ref="fileMessage" @change="sendFile()" />
             </div>
         </div>
@@ -60,6 +60,7 @@ const isChatChange = computed(() => store.state.isChatChange);
 const messageWrap = ref(null);
 const fileMessage = ref(null);
 
+const jwtToken = 'Bearer ' + window.localStorage.getItem('token');
 const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
@@ -127,7 +128,7 @@ const sendFile = () => {
         data: formData,
         headers: {
             'Content-Type': 'multipart/form-data',
-            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+            'Authentication': jwtToken
         }
     }).then((res) => {
         if (res.data.success) {
@@ -146,11 +147,46 @@ const sendFile = () => {
     //     ws.send("/pub/api/message", body, defaultJwtHeader);
     // }
 };
+const downloadFile = () => {
+    axios({
+        method: 'get',
+        url: '/api/attachs/23080b81-7b86-444e-94c6-d065e5c31387.xlsx', 
+        headers: defaultJwtHeader
+    }).then((res) => {
+        console.log(res);
+        if (res.data) {
+            const fileName = extractDownloadFilename(res);
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.setAttribute('download', fileName);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } else {
+            alert("파일 저장에 문제가 생겼습니다.");
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+};
 const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
 };
 const isMessageWrapScrollBottom = () => {
     return messageWrap.value.scrollTop === messageWrap.value.scrollHeight;
+};
+// content-disposition에서 파일이름 추출
+const extractDownloadFilename = (response) => {
+    const disposition = response.headers["content-disposition"];
+    const fileName = decodeURI(
+    disposition
+        .match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1]
+        .replace(/['"]/g, "")
+        );
+        return fileName;
 };
 
 
