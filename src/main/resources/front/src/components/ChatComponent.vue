@@ -101,7 +101,8 @@ const sendMessage = () => {
     if (ws && ws.connected) {
         const body = JSON.stringify({
             chatId: props.chatId,
-            message: data.message
+            message: data.message,
+            messageType: 'MESSAGE'
         });
         console.log(body);
         ws.send("/pub/api/message", body, defaultJwtHeader);
