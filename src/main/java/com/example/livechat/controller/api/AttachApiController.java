@@ -65,6 +65,7 @@ public class AttachApiController {
             return ResponseEntity.status(HttpStatus.OK)
                     .header(HttpHeaders.CONTENT_DISPOSITION, attachDownloadDto.getContentDisposition())
                     .header("Content-Type", Files.probeContentType(fullPath))
+                    .contentLength(file.length())
                     .body(attachDownloadDto.getUrlResource());
         } catch (MalformedURLException e) {
             log.info("파일 다운로드 MalformedURLException", e);
