@@ -44,7 +44,7 @@ public class AttachApiController {
                                                  @CurrentMember Member member) {
         AttachDto attachDto = null;
         try {
-            attachDto = attachService.save(file, messageSaveDto, member);
+            attachDto = attachService.save(file, messageSaveDto);
         } catch (IOException e) {
             log.info("파일 저장 에러", e);
             return new HttpResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", null);

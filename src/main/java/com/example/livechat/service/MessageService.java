@@ -7,6 +7,7 @@ import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.entity.Chat;
+import com.example.livechat.domain.enumerate.MessageType;
 import com.example.livechat.exception.NotContainsUserChatException;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
@@ -47,12 +48,29 @@ public class MessageService {
 
     public MessagePushRedisDto saveMessage(MessageSaveDto messageSaveDto, Member sender) {
         Chat chat = chatService.getChatEntity(messageSaveDto.getChatId());
+        Message message = null;
 
-        Message message = Message.builder()
-                .sender(sender)
-                .chat(chat)
-                .contents(messageSaveDto.getMessage())
-                .build();
+        switch (messageSaveDto.getMessageType()) {
+            case MESSAGE -> message = Message.builder()
+                    .messageType(MessageType.MESSAGE)
+                    .sender(sender)
+                    .chat(chat)
+                    .contents(messageSaveDto.getMessage())
+                    .build();
+            case ENTER -> message = Message.builder()
+                    .messageType(MessageType.ENTER)
+                    .sender(sender)
+                    .chat(chat)
+                    .contents(messageSaveDto.getMessage())
+                    .build();
+            case ATTACH -> message = Message.builder()
+                    .messageType(MessageType.ATTACH)
+                    .sender(sender)
+                    .chat(chat)
+                    .contents(messageSaveDto.getMessage())
+                    .build();
+            default -> throw new IllegalArgumentException("MessageType 값이 이상합니다. messageType : " + messageSaveDto.getMessageType());
+        }
 
         messageRepository.save(message);
 

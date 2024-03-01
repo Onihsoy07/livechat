@@ -34,7 +34,7 @@ public class AttachService {
     private final AttachRepository attachRepository;
     private final ChatService chatService;
 
-    public AttachDto save(MultipartFile multipartFile, MessageSaveDto messageSaveDto, Member member) throws IOException {
+    public AttachDto save(MultipartFile multipartFile, MessageSaveDto messageSaveDto) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -49,8 +49,6 @@ public class AttachService {
         Attach attach = Attach.builder()
                 .uploadFileName(originalFilename)
                 .storeFileName(storeFileName)
-                .sender(member)
-                .chat(chat)
                 .build();
 
         attachRepository.save(attach);
