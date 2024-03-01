@@ -109,9 +109,16 @@ const sendMessage = () => {
     data.message = '';
 };
 const sendFile = () => {
-    const formData = new FormData();
     const file = fileMessage.value.files[0];
+    const messageData = {
+        chatId: props.chatId,
+        message: "file save"
+    };
+    const formData = new FormData();
     formData.append('file', file);
+    formData.append('message', new Blob([JSON.stringify(messageData)], { 
+        type: 'application/json' 
+    }));
     console.log(file);
 
     axios({
