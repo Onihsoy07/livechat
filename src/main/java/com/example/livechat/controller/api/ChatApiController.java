@@ -4,14 +4,18 @@ import com.example.livechat.annotation.CurrentMember;
 import com.example.livechat.domain.dto.HttpResponseDto;
 import com.example.livechat.domain.dto.ChatDto;
 import com.example.livechat.domain.dto.ChatSaveDto;
+import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.domain.entity.Member;
+import com.example.livechat.domain.enumerate.MessageType;
 import com.example.livechat.service.MemberChatService;
 import com.example.livechat.service.ChatService;
+import com.example.livechat.service.MessageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +29,13 @@ public class ChatApiController {
 
     private final ChatService chatService;
     private final MemberChatService memberChatService;
+    private final MessageService messageService;
 
     @PostMapping
     public HttpResponseDto<?> createChat(@RequestBody @Valid ChatSaveDto chatSaveDto,
                                          BindingResult bindingResult,
-                                         @CurrentMember Member member) {
+                                         @CurrentMember Member member,
+                                         @RequestHeader("Authentication") String token) {
         if (bindingResult.hasErrors()) {
             String message = bindingResult.getAllErrors().get(0).getDefaultMessage();
             return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, message, null);
@@ -37,6 +43,8 @@ public class ChatApiController {
 
         Chat chat = chatService.createChat(chatSaveDto);
         memberChatService.createMemberMessageGroup(member, chat);
+
+        enterMessage(chat.getId(), member, token);
 
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
     }
@@ -66,11 +74,19 @@ public class ChatApiController {
 
     @PostMapping("/{chatId}")
     public HttpResponseDto<?> joinChat(@PathVariable("chatId") Long chatId,
-                                       @CurrentMember Member member) {
+                                       @CurrentMember Member member,
+                                       @RequestHeader("Authentication") String token) {
         Chat chat = chatService.getChatEntity(chatId);
         memberChatService.createMemberMessageGroup(member, chat);
 
+        enterMessage(chatId, member, token);
+
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
+    }
+
+    private void enterMessage(Long chatId, Member member, String token) {
+        MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 입장하셨습니다.", MessageType.ENTER);
+        messageService.messageResolver(messageSaveDto, token);
     }
 
 }

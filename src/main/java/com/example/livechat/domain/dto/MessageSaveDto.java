@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class MessageSaveDto {
 
     @NotNull(message = "대화방이 존재하지 않습니다.")
@@ -24,4 +23,16 @@ public class MessageSaveDto {
 
     private String fileName;
 
+    public MessageSaveDto(Long chatId, String message, MessageType messageType) {
+        this.chatId = chatId;
+        this.message = message;
+        this.messageType = messageType;
+    }
+
+    public MessageSaveDto(Long chatId, String message, MessageType messageType, String fileName) {
+        this.chatId = chatId;
+        this.message = message;
+        this.messageType = messageType;
+        this.fileName = fileName;
+    }
 }
