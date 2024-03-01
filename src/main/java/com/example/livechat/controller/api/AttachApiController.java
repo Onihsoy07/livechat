@@ -1,7 +1,10 @@
 package com.example.livechat.controller.api;
 
+import com.example.livechat.annotation.CurrentMember;
 import com.example.livechat.domain.dto.AttachDto;
 import com.example.livechat.domain.dto.HttpResponseDto;
+import com.example.livechat.domain.dto.MessageSaveDto;
+import com.example.livechat.domain.entity.Member;
 import com.example.livechat.service.AttachService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +26,12 @@ public class AttachApiController {
     private final AttachService attachService;
 
     @PostMapping
-    public HttpResponseDto<AttachDto> saveAttach(@RequestPart(value = "file") MultipartFile file) {
+    public HttpResponseDto<AttachDto> saveAttach(@RequestPart(value = "file") MultipartFile file,
+                                                 @RequestPart(value = "message") MessageSaveDto messageSaveDto,
+                                                 @CurrentMember Member member) {
         AttachDto attachDto = null;
         try {
-            attachDto = attachService.save(file);
+            attachDto = attachService.save(file, messageSaveDto, member);
         } catch (IOException e) {
             log.info("파일 저장 에러", e);
             return new HttpResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", null);

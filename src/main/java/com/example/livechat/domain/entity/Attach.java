@@ -31,10 +31,10 @@ public class Attach extends Base {
     private Chat chat;
 
     @Builder
-    public Attach(String uploadFileName, String storeFileName) {
+    public Attach(String uploadFileName, String storeFileName, Member sender, Chat chat) {
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
-        this.sender = null;
-        this.chat = null;
+        this.sender = sender;
+        this.chat = chat;
     }
 }
