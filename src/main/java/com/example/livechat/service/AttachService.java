@@ -1,5 +1,6 @@
 package com.example.livechat.service;
 
+import com.example.livechat.domain.dto.AttachDownloadDto;
 import com.example.livechat.domain.dto.AttachDto;
 import com.example.livechat.domain.dto.MessageSaveDto;
 import com.example.livechat.domain.entity.Attach;
@@ -9,12 +10,16 @@ import com.example.livechat.repository.AttachRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Slf4j
@@ -53,7 +58,25 @@ public class AttachService {
         return new AttachDto(attach);
     }
 
+    @Transactional(readOnly = true)
+    public AttachDownloadDto downloadAttach(String storeFileName) throws MalformedURLException {
+        Attach attach = getAttachEntityFindStoreFileName(storeFileName);
+        String fullPath = getFullPath(storeFileName);
+        UrlResource urlResource = new UrlResource("file:" + fullPath);
+        String encodeFileName = UriUtils.encode(attach.getUploadFileName(), StandardCharsets.UTF_8);
+        String contentDisposition = "attachment; filename=\"" + encodeFileName + "\"";
 
+        return new AttachDownloadDto(attach, encodeFileName, fullPath, urlResource, contentDisposition);
+    }
+
+
+
+    @Transactional(readOnly = true)
+    private Attach getAttachEntityFindStoreFileName(String storeFileName) {
+        return attachRepository.findByStoreFileName(storeFileName).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Chat ID : %s 로 찾을 수 없습니다.", storeFileName));
+        });
+    }
 
     private String getFullPath(String fileName) {
         return fileDir + fileName;
