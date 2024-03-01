@@ -22,19 +22,9 @@ public class Attach extends Base {
     @Column(nullable = false, unique = true)
     private String storeFileName;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "member_id")
-    private Member sender;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
-
     @Builder
-    public Attach(String uploadFileName, String storeFileName, Member sender, Chat chat) {
+    public Attach(String uploadFileName, String storeFileName) {
         this.uploadFileName = uploadFileName;
         this.storeFileName = storeFileName;
-        this.sender = sender;
-        this.chat = chat;
     }
 }

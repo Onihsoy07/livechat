@@ -1,5 +1,6 @@
 package com.example.livechat.domain.entity;
 
+import com.example.livechat.domain.enumerate.MessageType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,6 +24,9 @@ public class Message extends Base {
     @Column(nullable = false, unique = false)
     private String contents;
 
+    @Enumerated(EnumType.STRING)
+    private MessageType messageType;
+
     @Column(nullable = true, unique = false)
     private List<Long> viewerMemberList = new ArrayList<>();
 
@@ -34,9 +38,14 @@ public class Message extends Base {
     @JoinColumn(name = "chat_id")
     private Chat chat;
 
+    @OneToOne
+    @JoinColumn(name = "attach_id")
+    private Attach attach;
+
     @Builder
-    public Message(String contents, Member sender, Chat chat) {
+    public Message(String contents, MessageType messageType, Member sender, Chat chat, Attach attach) {
         this.contents = contents;
+        this.messageType = messageType;
         this.sender = sender;
         this.chat = chat;
     }
