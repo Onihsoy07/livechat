@@ -151,7 +151,8 @@ const downloadFile = () => {
     axios({
         method: 'get',
         url: '/api/attachs/23080b81-7b86-444e-94c6-d065e5c31387.xlsx', 
-        headers: defaultJwtHeader
+        headers: defaultJwtHeader,
+        responseType: 'blob'
     }).then((res) => {
         console.log(res);
         if (res.data) {
