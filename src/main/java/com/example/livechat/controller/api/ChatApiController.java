@@ -76,6 +76,11 @@ public class ChatApiController {
     public HttpResponseDto<?> joinChat(@PathVariable("chatId") Long chatId,
                                        @CurrentMember Member member,
                                        @RequestHeader("Authentication") String token) {
+        Boolean isJoinChat = memberChatService.checkMyChat(chatId, member.getId());
+        if (isJoinChat) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "이미 참가한 대화방입니다.", null);
+        }
+
         Chat chat = chatService.getChatEntity(chatId);
         memberChatService.createMemberMessageGroup(member, chat);
 
