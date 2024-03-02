@@ -9,6 +9,7 @@ import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.domain.enumerate.MessageType;
 import com.example.livechat.exception.NotContainsUserChatException;
+import com.example.livechat.repository.AttachRepository;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,8 @@ import java.util.List;
 @Transactional
 public class MessageService {
 
-    private final MemberService memberService;
-    private final ChatService chatService;
     private final MessageRepository messageRepository;
+    private final ChatService chatService;
     private final MemberChatService memberChatService;
     private final JwtProvider jwtProvider;
     private final RedisPublisher redisPublisher;
@@ -68,6 +68,7 @@ public class MessageService {
                     .sender(sender)
                     .chat(chat)
                     .contents(messageSaveDto.getMessage())
+                    .attach(messageSaveDto.getAttach())
                     .build();
             default -> throw new IllegalArgumentException("MessageType 값이 이상합니다. messageType : " + messageSaveDto.getMessageType());
         }

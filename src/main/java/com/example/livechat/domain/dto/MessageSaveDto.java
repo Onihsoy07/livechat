@@ -1,5 +1,6 @@
 package com.example.livechat.domain.dto;
 
+import com.example.livechat.domain.entity.Attach;
 import com.example.livechat.domain.enumerate.MessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +22,7 @@ public class MessageSaveDto {
     @NotBlank(message = "메시지 타입이 존재하지 않습니다.")
     private MessageType messageType;
 
-    private String fileName;
+    private Attach attach;
 
     public MessageSaveDto(Long chatId, String message, MessageType messageType) {
         this.chatId = chatId;
@@ -29,10 +30,4 @@ public class MessageSaveDto {
         this.messageType = messageType;
     }
 
-    public MessageSaveDto(Long chatId, String message, MessageType messageType, String fileName) {
-        this.chatId = chatId;
-        this.message = message;
-        this.messageType = messageType;
-        this.fileName = fileName;
-    }
 }

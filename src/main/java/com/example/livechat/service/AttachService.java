@@ -33,8 +33,9 @@ public class AttachService {
 
     private final AttachRepository attachRepository;
     private final ChatService chatService;
+    private final MessageService messageService;
 
-    public AttachDto save(MultipartFile multipartFile, MessageSaveDto messageSaveDto) throws IOException {
+    public AttachDto save(MultipartFile multipartFile, MessageSaveDto messageSaveDto, String token) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -53,6 +54,9 @@ public class AttachService {
 
         attachRepository.save(attach);
 
+        messageSaveDto.setAttach(attach);
+        messageService.messageResolver(messageSaveDto, token);
+
         return new AttachDto(attach);
     }
 
@@ -68,11 +72,17 @@ public class AttachService {
     }
 
 
+    @Transactional(readOnly = true)
+    public Attach getAttachEntity(Long attachId) {
+        return attachRepository.findById(attachId).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Attach ID : %d 로 찾을 수 없습니다.", attachId));
+        });
+    }
 
     @Transactional(readOnly = true)
     private Attach getAttachEntityFindStoreFileName(String storeFileName) {
         return attachRepository.findByStoreFileName(storeFileName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Chat ID : %s 로 찾을 수 없습니다.", storeFileName));
+            throw new IllegalArgumentException(String.format("Attach Name : %s 로 찾을 수 없습니다.", storeFileName));
         });
     }
 

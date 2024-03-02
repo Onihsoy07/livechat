@@ -9,6 +9,7 @@ import com.example.livechat.domain.entity.Member;
 import com.example.livechat.service.AttachService;
 import io.netty.util.internal.StringUtil;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.StringUtils;
@@ -39,17 +40,19 @@ public class AttachApiController {
     private final AttachService attachService;
 
     @PostMapping
-    public HttpResponseDto<AttachDto> saveAttach(@RequestPart(value = "file") MultipartFile file,
-                                                 @RequestPart(value = "message") MessageSaveDto messageSaveDto,
-                                                 @CurrentMember Member member) {
+    public HttpResponseDto<Null> saveAttach(@RequestPart(value = "file") MultipartFile file,
+                                            @RequestPart(value = "message") MessageSaveDto messageSaveDto,
+                                            @CurrentMember Member member,
+                                            @RequestHeader("Authentication") String token) {
         AttachDto attachDto = null;
         try {
-            attachDto = attachService.save(file, messageSaveDto);
+            attachDto = attachService.save(file, messageSaveDto, token);
         } catch (IOException e) {
             log.info("파일 저장 에러", e);
             return new HttpResponseDto<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), false, "", null);
         }
-        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "", null);
+
+        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "파일 보내기 성공", null);
     }
 
     @GetMapping("/{attachStoreFileName}")

@@ -30,6 +30,8 @@ public class MessagePushRedisDto {
         this.createDate = message.getCreateAt().toString();
         if (message.getAttach() != null) {
             this.attachDto = new AttachDto(message.getAttach());
+        } else {
+            this.attachDto = new AttachDto(null, null);
         }
     }
 }

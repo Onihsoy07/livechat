@@ -48,6 +48,7 @@ public class Message extends Base {
         this.messageType = messageType;
         this.sender = sender;
         this.chat = chat;
+        this.attach = attach;
     }
 
 }
