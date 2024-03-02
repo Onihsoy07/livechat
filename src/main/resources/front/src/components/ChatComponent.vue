@@ -2,28 +2,51 @@
     <div class="chat-wrap">
         <div class="chat-contents-wrap" ref="messageWrap">
             <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
-                <div class="message-user">
-                    {{ messageData.sender.username }}
+                <div v-if="messageData.messageType === 'ENTER'" class="enter-message-wrap">
+                    <div>{{ messageData.contents }}</div>
                 </div>
-                <div class="message-contents">
-                    {{ messageData.contents }}
+
+                <div v-else-if="messageData.sender.username === username" class="message-wrap my-area">
+                    <div v-if="messageData.messageType === 'ATTACH'">
+                        <div class="message-contents attach-contents" @click="downloadFile(messageData.attachDto.storeFileName)">
+                            {{ messageData.attachDto.uploadFileName }}
+                        </div>
+                    </div>
+
+                    <div v-else class="message-contents">
+                        {{ messageData.contents }}
+                    </div>
                 </div>
-            </div>
-            <div class="chat-contents" v-for="(messageDto, idx) in data.messageList" :key="idx">
-                <div class="message-user">
-                    {{ messageDto.sender.username }}
+
+                <div v-else class="message-wrap">
+                    <div v-if="messageData.messageType === 'ATTACH'" >
+                        <div class="message-user">
+                            {{ messageData.sender.username }}
+                        </div>
+                        <div class="message-contents attach-contents" @click="downloadFile(messageData.attachDto.storeFileName)">
+                            {{ messageData.attachDto.uploadFileName }}
+                        </div>
+                    </div>
+
+                    <div v-else>
+                        <div class="message-user">
+                            {{ messageData.sender.username }}
+                        </div>
+                        <div class="message-contents">
+                            {{ messageData.contents }}
+                        </div>
+                    </div>
+
                 </div>
-                <div class="message-contents">
-                    {{ messageDto.contents }}
-                </div>
+
             </div>
         </div>
         <div class="message-box-wrap">
             <div class="message-box">
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
-                <button @click="downloadFile">파일다운</button>
-                <input type="file" ref="fileMessage" @change="sendFile()" />
+                <button @click="openFile">파일</button>
+                <input class="file-input" type="file" ref="fileMessage" @change="sendFile()" />
             </div>
         </div>
     </div>
@@ -52,9 +75,9 @@ const data = reactive({
     initCheck: true,
     newMessageCheck: false,
     message: '',
-    messageList: [],
 });
 
+const username = computed(() => store.state.username);
 const messageContentList = computed(() => store.state.messageContentList);
 const isChatChange = computed(() => store.state.isChatChange);
 const messageWrap = ref(null);
@@ -80,7 +103,7 @@ const connect = () => {
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
-                    data.messageList.push(JSON.parse(res.body));
+                    messageContentList.value.push(JSON.parse(res.body));
                     data.newMessageCheck = true;
                 },
                 defaultJwtHeader
@@ -110,17 +133,25 @@ const sendMessage = () => {
 
     data.message = '';
 };
+const openFile = () => {
+    fileMessage.value.click();
+}
 const sendFile = () => {
     const file = fileMessage.value.files[0];
     const messageData = {
         chatId: props.chatId,
-        message: "file save"
+        message: 'file save',
+        messageType: 'ATTACH'
     };
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('message', new Blob([JSON.stringify(messageData)], { 
-        type: 'application/json' 
-    }));
+    formData.append('message',
+                    new Blob(
+                        [JSON.stringify(messageData)],
+                        {
+                            type: 'application/json'
+                        }
+                    ));
     console.log(file);
 
     axios({
@@ -140,18 +171,13 @@ const sendFile = () => {
         }
     }).catch((error) => {
         console.log(error);
+        alert('파일의 크기가 100MB를 초과하였습니다.');
     });
-
-
-    // console.log('ws 전송 시작');
-    // if (ws && ws.connected) {
-    //     ws.send("/pub/api/message", body, defaultJwtHeader);
-    // }
 };
-const downloadFile = () => {
+const downloadFile = (fileName) => {
     axios({
         method: 'get',
-        url: '/api/attachs/23080b81-7b86-444e-94c6-d065e5c31387.xlsx', 
+        url: '/api/attachs/' + fileName, 
         headers: defaultJwtHeader,
         responseType: 'blob'
     }).then((res) => {
@@ -220,7 +246,7 @@ onUnmounted(() => {
 
 <style scoped>
 .chat-wrap {
-    width: 200px;
+    width: 300px;
 }
 .chat-contents-wrap {
     border: 1px solid gray;
@@ -239,20 +265,39 @@ onUnmounted(() => {
 } */
 .message-box textarea {
     all: unset;
-    width: 100%;
-    height: 70px;
-    border: 1px solid gray;
+    margin-top: 5px;
+    width: 95%;
+    height: 65px;
     resize: none;
     text-align: left;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+.message-box textarea::-webkit-scrollbar {
+  display: none;
 }
 .message-box button {
     position: relative;
-    top: -30px;
-    left: 65px;
+    left: 33%;
 }
 .chat-contents {
+    display: flow-root;
+}
+.message-wrap {
     display: flex;
-    padding: 10px 5px;
+    float: left;
+    padding: 5px;
+    max-width: 80%;
+}
+.message-wrap div {
+    display: flex;
+}
+.my-area {
+    float: right;
+}
+.enter-message-wrap {
+    background-color: #EAEAEA;
+    margin: 5px 0px;
 }
 .message-user {
     border: 1px solid gray;
@@ -263,10 +308,25 @@ onUnmounted(() => {
     height: 20px;
 }
 .message-contents {
-    margin-left: 20px;
+    margin: 0px 10px;
+    padding: 5px;
     border: 1px solid gray;
-    border-radius: 10%;
-    width: 80%;
+    border-radius: 10px;
     text-align: left;
+    font-size: 16px;
+    word-break: break-all;
+}
+.my-area .message-contents {
+    margin: 0px;
+}
+.attach-contents {
+    background-color: #EAEAEA;
+}
+.attach-contents:hover {
+    background-color: #BCBCBC;
+    cursor: pointer;
+}
+.file-input {
+    display: none;
 }
 </style>
