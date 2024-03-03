@@ -8,6 +8,7 @@ import com.example.livechat.domain.entity.MemberChat;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.enumerate.MessageType;
 import com.example.livechat.repository.MemberChatRepository;
+import com.example.livechat.repository.MemberRepository;
 import com.example.livechat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,22 +26,17 @@ import java.util.Optional;
 public class MemberChatService {
 
     private final MemberChatRepository memberChatRepository;
-//    private final MessageRepository messageRepository;
+    private final MemberService memberService;
 
-    public void createMemberMessageGroup(Member member, Chat chat) {
+    public void createMemberMessageGroup(Long memberId, Chat chat) {
+        Member member = memberService.getMemberEntity(memberId);
+
         MemberChat memberChat = MemberChat.builder()
                 .member(member)
                 .chat(chat)
                 .build();
-//        Message message = Message.builder()
-//                .sender(memberChat.getMember())
-//                .chat(memberChat.getChat())
-//                .messageType(MessageType.ENTER)
-//                .contents(member.getUsername() + "님이 입장하셨습니다.")
-//                .build();
 
         memberChatRepository.save(memberChat);
-//        messageRepository.save(message);
     }
 
     @Transactional(readOnly = true)
