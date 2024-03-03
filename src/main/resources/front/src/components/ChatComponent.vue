@@ -1,5 +1,25 @@
 <template>
     <div class="chat-wrap">
+
+        <div class="bg-black invite-member" v-if="data.isInviteWinOpen">
+            <div class="bg-white">
+                <div>
+                    <label for="invite-username">닉네임</label>
+                    <input type="text" name="invite-username" v-model="data.inviteUsername">
+                </div>
+                <div>
+                    <button @click="searchUsername">검색</button>
+                    <button @click="closeInviteDetail">취소</button>
+                </div>
+                <div>
+                    <div v-if="data.memberSearchResult" class="chat-search-result-wrap">
+                        <div>{{ data.memberSearchResult.username }}</div>
+                        <button @click="inviteMember(data.memberSearchResult.id, data.memberSearchResult.username)">초대</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="chat-contents-wrap" ref="messageWrap">
             <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
 
@@ -81,6 +101,7 @@
                 <textarea name="message" v-model="data.message"></textarea>
                 <button @click="sendMessage">보내기</button>
                 <button @click="openFile">파일</button>
+                <button @click="inviteWinOpen">초대</button>
                 <input class="file-input" type="file" ref="fileMessage" @change="sendFile()" />
             </div>
         </div>
@@ -110,6 +131,9 @@ const data = reactive({
     initCheck: true,
     newMessageCheck: false,
     message: '',
+    isInviteWinOpen: false,
+    inviteUsername: '',
+    memberSearchResult: null,
 });
 
 const username = computed(() => store.state.username);
@@ -251,6 +275,62 @@ const extractDownloadFilename = (response) => {
         );
         return fileName;
 };
+const inviteWinOpen = () => {
+    data.isInviteWinOpen = true;
+};
+const closeInviteDetail = () => {
+    data.isInviteWinOpen = false;
+    data.inviteUsername = '';
+    data.memberSearchResult = null;
+}
+const searchUsername = () => {
+    data.memberSearchResult = null;
+    axios({
+        method: 'get',
+        url: '/api/members?username=' + data.inviteUsername, 
+        headers: {
+            'Content-Type': 'application/json',
+            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+        },
+    }).then((res) => {
+        console.log(res);
+        if (res.data.success) {
+            console.log(res.data.data);
+            data.memberSearchResult = res.data.data;
+            data.inviteUsername = '';
+        } else {
+            data.inviteUsername = '';
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+const inviteMember = (memberId, username) => {
+    axios({
+        method: 'post',
+        url: '/api/chat/' + props.chatId, 
+        data: JSON.stringify({
+            memberId: memberId,
+            username: username
+        }),
+        headers: {
+            'Content-Type': 'application/json',
+            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+        },
+    }).then((res) => {
+        console.log(res);
+        if (res.data.success) {
+            console.log(res.data.data);
+            closeInviteDetail();
+        } else {
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+
 
 
 onMounted(() => {
@@ -313,7 +393,7 @@ onUnmounted(() => {
 }
 .message-box button {
     position: relative;
-    left: 33%;
+    left: 25%;
 }
 .chat-contents {
     display: flow-root;
@@ -397,5 +477,11 @@ onUnmounted(() => {
     bottom: 0px;
     right: 0px;
     text-align: right;
+}
+.chat-search-result-wrap {
+    display: ruby;
+}
+.chat-search-result-wrap div {
+    margin-right: 5px;
 }
 </style>

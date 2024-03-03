@@ -119,5 +119,25 @@ onMounted(() => {
 .auth-input {
     margin-right: 10px;
 }
-
+.bg-black {
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 120px;
+    z-index: 10;
+}
+.bg-white {
+    width: 300px;
+    background: white;
+    border-radius: 8px;
+    margin: 0 auto;
+    padding: 10px;
+    z-index: 11;
+}
+.bg-white div {
+    margin: 10px 0px;
+}
 </style>
