@@ -2,38 +2,73 @@
     <div class="chat-wrap">
         <div class="chat-contents-wrap" ref="messageWrap">
             <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
+
                 <div v-if="messageData.messageType === 'ENTER'" class="enter-message-wrap">
                     <div>{{ messageData.contents }}</div>
                 </div>
 
                 <div v-else-if="messageData.sender.username === username" class="message-wrap my-area">
-                    <div v-if="messageData.messageType === 'ATTACH'">
+                    <div v-if="messageData.messageType === 'ATTACH'" class="message-inner">
+                        <div class="message-create-date">
+                            <div class="date-date">
+                                {{ messageData.createDate.slice(0, 8) }}
+                            </div>
+                            <div class="date-time">
+                                {{ messageData.createDate.slice(8) }}
+                            </div>
+                        </div>
                         <div class="message-contents attach-contents" @click="downloadFile(messageData.attachDto.storeFileName)">
                             {{ messageData.attachDto.uploadFileName }}
                         </div>
                     </div>
 
-                    <div v-else class="message-contents">
-                        {{ messageData.contents }}
+                    <div v-else class="message-inner">
+                        <div class="message-create-date">
+                            <div class="date-date">
+                                {{ messageData.createDate.slice(0, 8) }}
+                            </div>
+                            <div class="date-time">
+                                {{ messageData.createDate.slice(8) }}
+                            </div>
+                        </div>
+                        <div class="message-contents">
+                            {{ messageData.contents }}
+                        </div>
                     </div>
                 </div>
 
                 <div v-else class="message-wrap">
-                    <div v-if="messageData.messageType === 'ATTACH'" >
+                    <div v-if="messageData.messageType === 'ATTACH'" class="message-inner">
                         <div class="message-user">
                             {{ messageData.sender.username }}
                         </div>
                         <div class="message-contents attach-contents" @click="downloadFile(messageData.attachDto.storeFileName)">
                             {{ messageData.attachDto.uploadFileName }}
                         </div>
+                        <div class="message-create-date">
+                            <div class="date-date">
+                                {{ messageData.createDate.slice(0, 8) }}
+                            </div>
+                            <div class="date-time">
+                                {{ messageData.createDate.slice(8) }}
+                            </div>
+                        </div>
                     </div>
 
-                    <div v-else>
+                    <div v-else class="message-inner">
                         <div class="message-user">
                             {{ messageData.sender.username }}
                         </div>
                         <div class="message-contents">
                             {{ messageData.contents }}
+                        </div>
+                        <div class="message-create-date">
+                            <div class="date-date">
+                                {{ messageData.createDate.slice(0, 8) }}
+                            </div>
+                            <div class="date-time">
+                                {{ messageData.createDate.slice(8) }}
+                            </div>
                         </div>
                     </div>
 
@@ -287,19 +322,19 @@ onUnmounted(() => {
     display: flex;
     float: left;
     padding: 5px;
-    max-width: 80%;
-}
-.message-wrap div {
-    display: flex;
 }
 .my-area {
     float: right;
+}
+.message-inner {
+    display: flex;
 }
 .enter-message-wrap {
     background-color: #EAEAEA;
     margin: 5px 0px;
 }
 .message-user {
+    margin-top: 5px;
     border: 1px solid gray;
     border-radius: 50%;
     font-size: 12px;
@@ -308,16 +343,18 @@ onUnmounted(() => {
     height: 20px;
 }
 .message-contents {
-    margin: 0px 10px;
+    margin-left: 10px;
     padding: 5px;
     border: 1px solid gray;
     border-radius: 10px;
+    max-width: 60%;
     text-align: left;
     font-size: 16px;
     word-break: break-all;
 }
 .my-area .message-contents {
     margin: 0px;
+    max-width: 75%;
 }
 .attach-contents {
     background-color: #EAEAEA;
@@ -328,5 +365,37 @@ onUnmounted(() => {
 }
 .file-input {
     display: none;
+}
+.message-create-date {
+    padding-top: 3px;
+    margin: 0px 5px;
+    font-size: 10px;
+    width: 50px;
+    vertical-align: bottom;
+}
+.message-create-date {
+    position: relative;
+}
+.date-date {
+    position: absolute;
+    bottom: 11px;
+    left: 0px;
+}
+.date-time {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+.my-area .date-date {
+    position: absolute;
+    bottom: 11px;
+    right: 0px;
+    text-align: right;
+}
+.my-area .date-time {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    text-align: right;
 }
 </style>
