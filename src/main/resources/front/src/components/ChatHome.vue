@@ -29,9 +29,9 @@
                 <button @click="closeSearchChatName">취소</button>
             </div>
             <div>
-                <div v-for="(chat, idx) in data.searchChatList" :key="idx">
-                    <div>{{ chat }}</div>
-                    <button @click="joinChat(chat.id)">참가</button>
+                <div v-for="(chat, idx) in data.searchChatList" :key="idx" class="chat-search-result-wrap">
+                    <div class="search-chatname">{{ chat.chatName }}</div>
+                    <button class="chat-join-btn" @click="joinChat(chat.id)">참가</button>
                 </div>
             </div>
         </div>
@@ -121,6 +121,8 @@ const openSearchChatName = () => {
 };
 const closeSearchChatName = () => {
     data.isChatSearchOpen = false;
+    data.searchChatList = [];
+    data.searchChatName = '';
 };
 const searchChatName = () => {
     data.searchChatList = [];
@@ -140,7 +142,6 @@ const searchChatName = () => {
     });
 };
 const joinChat = (chatId) => {
-    alert(chatId);
     axios({
         method: 'post',
         url: '/api/chat/' + chatId, 
@@ -151,6 +152,7 @@ const joinChat = (chatId) => {
             data.isChatSearchOpen = false;
             data.searchChatName = '';
             data.setOpenChat = false;
+            data.searchChatList = [];
         } else {
             alert(res.data.message);
         }
@@ -169,6 +171,7 @@ const joinChat = (chatId) => {
     top: 0;
     left: 0;
     padding-top: 120px;
+    z-index: 10;
 }
 .bg-white {
     width: 300px;
@@ -176,6 +179,7 @@ const joinChat = (chatId) => {
     border-radius: 8px;
     margin: 0 auto;
     padding: 10px;
+    z-index: 11;
 }
 .bg-white div {
     margin: 10px 0px;
@@ -183,5 +187,14 @@ const joinChat = (chatId) => {
 .chat-outer {
     display: inline-flex;
     margin-top: 20px;
+}
+.chat-search-result-wrap {
+    display: flow-root;
+}
+.search-chatname {
+    display: contents;
+}
+.chat-join-btn {
+    margin-left: 5px;
 }
 </style>
