@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class MessagePushRedisDto {
     private ChatDto chatDto;
     private AttachDto attachDto;
     private String createDate;
+    private int notViewer;
 
     public MessagePushRedisDto(Message message) {
         this.id = message.getId();
@@ -27,7 +29,8 @@ public class MessagePushRedisDto {
         this.messageType = message.getMessageType();
         this.sender = new MemberDto(message.getSender());
         this.chatDto = new ChatDto(message.getChat());
-        this.createDate = message.getCreateAt().toString();
+        this.createDate = message.getCreateAt().format(DateTimeFormatter.ofPattern("yy.MM.ddHH:mm"));
+        this.notViewer = message.getViewerMemberSet().size();
         if (message.getAttach() != null) {
             this.attachDto = new AttachDto(message.getAttach());
         } else {

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @NoArgsConstructor
@@ -18,14 +19,16 @@ public class MessageDto {
     private MessageType messageType;
     private MemberDto sender;
     private AttachDto attachDto;
-    private LocalDateTime createDate;
+    private String createDate;
+    private int notViewer;
 
     public MessageDto(Message message) {
         this.messageId = message.getId();
         this.contents = message.getContents();
         this.messageType = message.getMessageType();
         this.sender = new MemberDto(message.getSender());
-        this.createDate = message.getCreateAt();
+        this.createDate = message.getCreateAt().format(DateTimeFormatter.ofPattern("yy.MM.ddHH:mm"));
+        this.notViewer = message.getViewerMemberSet().size();
         if (message.getAttach() != null) {
             this.attachDto = new AttachDto(message.getAttach());
         } else {
