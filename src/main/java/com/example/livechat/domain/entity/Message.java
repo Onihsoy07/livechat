@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,7 +30,7 @@ public class Message extends Base {
     private MessageType messageType;
 
     @Column(nullable = true, unique = false)
-    private List<Long> viewerMemberList = new ArrayList<>();
+    private Set<Long> viewerMemberSet = new HashSet<>();
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
@@ -49,6 +51,11 @@ public class Message extends Base {
         this.sender = sender;
         this.chat = chat;
         this.attach = attach;
+        viewMessage(sender);
+    }
+
+    public void viewMessage(Member member) {
+        this.viewerMemberSet.add(member.getId());
     }
 
 }

@@ -83,11 +83,12 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDto> getChatMessageList(Long chatId) {
+    public List<MessageDto> getChatMessageList(Long chatId, Member member) {
         List<Message> messageList = messageRepository.findByMessageGroup_Id(chatId);
         List<MessageDto> messageDtoList = new ArrayList<>();
 
         for (Message message : messageList) {
+            message.viewMessage(member);
             messageDtoList.add(new MessageDto(message));
         }
 
