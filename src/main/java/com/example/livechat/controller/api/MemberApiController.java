@@ -56,6 +56,24 @@ public class MemberApiController {
         return new HttpResponseDto<>(HttpStatus.NOT_FOUND.value(), false, "페이지 없음", null);
     }
 
+    @GetMapping
+    public HttpResponseDto<MemberDto> searchUsername(@RequestParam(name = "username") final String username,
+                                                     @CurrentMember final Member member) {
+        if (member.getUsername().equals(username)) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "자신을 초대할 수 없습니다.", null);
+        }
+
+        MemberDto memberDto = null;
+        try {
+            memberDto = memberService.getMember(username);
+        } catch (IllegalArgumentException e) {
+            log.info("유저를 찾을 수 없음", e);
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "유저를 찾을 수 없습니다.", null);
+        }
+
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "유저 찾음", memberDto);
+    }
+
     @PatchMapping("/{memberId}")
     public HttpResponseDto<Null> updateMemberPassword(@PathVariable("memberId") final Long memberId,
                                                       @Valid @RequestBody final MemberPasswordUpdateDto memberPasswordUpdateDto,

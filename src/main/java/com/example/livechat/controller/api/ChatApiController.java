@@ -1,10 +1,7 @@
 package com.example.livechat.controller.api;
 
 import com.example.livechat.annotation.CurrentMember;
-import com.example.livechat.domain.dto.HttpResponseDto;
-import com.example.livechat.domain.dto.ChatDto;
-import com.example.livechat.domain.dto.ChatSaveDto;
-import com.example.livechat.domain.dto.MessageSaveDto;
+import com.example.livechat.domain.dto.*;
 import com.example.livechat.domain.entity.Chat;
 import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.enumerate.MessageType;
@@ -42,7 +39,7 @@ public class ChatApiController {
         }
 
         Chat chat = chatService.createChat(chatSaveDto);
-        memberChatService.createMemberMessageGroup(member, chat);
+        memberChatService.createMemberMessageGroup(member.getId(), chat);
 
         enterMessage(chat.getId(), member, token);
 
@@ -74,23 +71,39 @@ public class ChatApiController {
 
     @PostMapping("/{chatId}")
     public HttpResponseDto<?> joinChat(@PathVariable("chatId") Long chatId,
+                                       @RequestBody(required = false) final MemberInviteDto memberInviteDto,
                                        @CurrentMember Member member,
                                        @RequestHeader("Authentication") String token) {
-        Boolean isJoinChat = memberChatService.checkMyChat(chatId, member.getId());
-        if (isJoinChat) {
-            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "이미 참가한 대화방입니다.", null);
+        Chat chat = chatService.getChatEntity(chatId);
+
+        if (memberInviteDto != null) {
+            Boolean isJoinChat = memberChatService.checkMyChat(chatId, memberInviteDto.getMemberId());
+            if (isJoinChat) {
+                return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "이미 대화방에 참가한 유저입니다.", null);
+            }
+
+            memberChatService.createMemberMessageGroup(memberInviteDto.getMemberId(), chat);
+            inviteMessage(chatId, member, memberInviteDto.getUsername(), token);
+        } else {
+            Boolean isJoinChat = memberChatService.checkMyChat(chatId, member.getId());
+            if (isJoinChat) {
+                return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "이미 참가한 대화방입니다.", null);
+            }
+
+            memberChatService.createMemberMessageGroup(member.getId(), chat);
+            enterMessage(chatId, member, token);
         }
 
-        Chat chat = chatService.getChatEntity(chatId);
-        memberChatService.createMemberMessageGroup(member, chat);
-
-        enterMessage(chatId, member, token);
-
-        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
+        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "대화방 참가", null);
     }
 
     private void enterMessage(Long chatId, Member member, String token) {
         MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 입장하셨습니다.", MessageType.ENTER);
+        messageService.messageResolver(messageSaveDto, token);
+    }
+
+    private void inviteMessage(Long chatId, Member member, String inviteUsername, String token) {
+        MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 " + inviteUsername + "님을 초대하셨습니다.", MessageType.ENTER);
         messageService.messageResolver(messageSaveDto, token);
     }
 
