@@ -1,18 +1,19 @@
 <template>
     <div class="chat-collection-wrap">
-        <div v-for="(chat, idx) in data.chatCollection" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
+        <div v-for="(chat, idx) in chatList" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
             <div class="chat-name">{{ chat.chatName }}</div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import axios from 'axios';
 import { useStore } from 'vuex';
 
 
 const store = useStore();
+const chatList = computed(() => store.state.chatList);
 const data = reactive({
     chatCollection: [],
 });
@@ -34,6 +35,7 @@ onMounted(() => {
         console.log(res);
         if (res.data.success) {
             data.chatCollection = res.data.data;
+            store.commit('SET_CHATLIST', res.data.data);
         } else {
             alert(res.data.message);
         }

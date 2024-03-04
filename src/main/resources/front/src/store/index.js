@@ -17,8 +17,8 @@ export default createStore({
         username: '',
         currentChatId: null,
         messageContentList: [],
+        chatList: null,
         isChatChange: false,
-
     },
     mutations: {
         LOGIN_CHECK(state) {
@@ -103,7 +103,24 @@ export default createStore({
         },
         SET_ISCHATCHANGE(state, changeResult) {
             state.isChatChange = changeResult;
-        }
+        },
+        LEAVE_CHAT(state, chatId) {
+            state.currentChatId = null;
+            console.log(state.chatList);
+            console.log(chatId);
+            console.log(state.chatList);
+            for (const item of Object.entries(state.chatList)) {
+                console.log(item[1].chatName);
+                if (item[1].id === chatId) {
+                    state.chatList.removeItem(1);
+                    console.log('*********', item[1].chatName);
+                }
+            }
+            console.log('after', state.chatList);
+        },
+        SET_CHATLIST(state, chatList) {
+            state.chatList = chatList;
+        },
     },
     getters: {
 

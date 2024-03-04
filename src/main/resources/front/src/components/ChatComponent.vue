@@ -102,6 +102,7 @@
                 <button @click="sendMessage">보내기</button>
                 <button @click="openFile">파일</button>
                 <button @click="inviteWinOpen">초대</button>
+                <button @click="leaveChat">나가기</button>
                 <input class="file-input" type="file" ref="fileMessage" @change="sendFile()" />
             </div>
         </div>
@@ -146,6 +147,10 @@ const jwtToken = 'Bearer ' + window.localStorage.getItem('token');
 const defaultJwtHeader = {
     'Authentication': 'Bearer ' + window.localStorage.getItem('token')
 };
+const defaultJsonJwtHeader = {
+    'Content-Type': 'application/json',
+    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+}
 
 
 const connect = () => {
@@ -288,10 +293,7 @@ const searchUsername = () => {
     axios({
         method: 'get',
         url: '/api/members?username=' + data.inviteUsername, 
-        headers: {
-            'Content-Type': 'application/json',
-            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-        },
+        headers: defaultJsonJwtHeader,
     }).then((res) => {
         console.log(res);
         if (res.data.success) {
@@ -314,15 +316,30 @@ const inviteMember = (memberId, username) => {
             memberId: memberId,
             username: username
         }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-        },
+        headers: defaultJsonJwtHeader,
     }).then((res) => {
         console.log(res);
         if (res.data.success) {
             console.log(res.data.data);
             closeInviteDetail();
+        } else {
+            alert(res.data.message);
+        }
+    }).catch((error) => {
+        console.log(error);
+    });
+}
+const leaveChat = () => {
+    axios({
+        method: 'delete',
+        url: '/api/chat/' + props.chatId,
+        headers: defaultJsonJwtHeader,
+    }).then((res) => {
+        console.log(res);
+        if (res.data.success) {
+            console.log(res.data.data);
+            ws.disconnect('', defaultJwtHeader);
+            store.commit('LEAVE_CHAT', props.chatId);
         } else {
             alert(res.data.message);
         }
@@ -393,7 +410,7 @@ onUnmounted(() => {
 }
 .message-box button {
     position: relative;
-    left: 25%;
+    left: 17%;
 }
 .chat-contents {
     display: flow-root;
