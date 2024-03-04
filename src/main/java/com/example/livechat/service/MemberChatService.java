@@ -12,6 +12,7 @@ import com.example.livechat.repository.MemberRepository;
 import com.example.livechat.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,10 @@ public class MemberChatService {
     public Boolean checkMyChat(Long chatId, Long memberId) {
         Optional<MemberChat> result = memberChatRepository.findByMember_IdAndChat_id(memberId, chatId);
         return result.isPresent();
+    }
+
+    public void leaveChat(Long chatId, Long memberId) {
+        memberChatRepository.leaveChat(chatId, memberId);
     }
 
 

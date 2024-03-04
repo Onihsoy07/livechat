@@ -9,6 +9,7 @@ import com.example.livechat.service.MemberChatService;
 import com.example.livechat.service.ChatService;
 import com.example.livechat.service.MessageService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -97,6 +98,21 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "대화방 참가", null);
     }
 
+    @DeleteMapping("/{chatId}")
+    public HttpResponseDto<Null> leaveChat(@PathVariable("chatId") final Long chatId,
+                                           @CurrentMember final Member member,
+                                           @RequestHeader("Authentication") String token) {
+        Boolean isEnterChat = memberChatService.checkMyChat(chatId, member.getId());
+
+        if (!isEnterChat) {
+            return new HttpResponseDto<>(HttpStatus.BAD_REQUEST.value(), false, "유저가 참가한 대화방이 아닙니다.", null);
+        }
+
+        leaveMessage(chatId, member, token);
+        memberChatService.leaveChat(chatId, member.getId());
+        return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 나가기", null);
+    }
+
     private void enterMessage(Long chatId, Member member, String token) {
         MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 입장하셨습니다.", MessageType.ENTER);
         messageService.messageResolver(messageSaveDto, token);
@@ -104,6 +120,11 @@ public class ChatApiController {
 
     private void inviteMessage(Long chatId, Member member, String inviteUsername, String token) {
         MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 " + inviteUsername + "님을 초대하셨습니다.", MessageType.ENTER);
+        messageService.messageResolver(messageSaveDto, token);
+    }
+
+    private void leaveMessage(Long chatId, Member member, String token) {
+        MessageSaveDto messageSaveDto = new MessageSaveDto(chatId, member.getUsername() + "님이 나가셨습니다.", MessageType.ENTER);
         messageService.messageResolver(messageSaveDto, token);
     }
 

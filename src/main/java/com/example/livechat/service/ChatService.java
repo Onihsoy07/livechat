@@ -3,6 +3,7 @@ package com.example.livechat.service;
 import com.example.livechat.domain.dto.ChatDto;
 import com.example.livechat.domain.dto.ChatSaveDto;
 import com.example.livechat.domain.entity.Chat;
+import com.example.livechat.domain.entity.Member;
 import com.example.livechat.repository.ChatRepository;
 import com.example.livechat.service.redis.RedisSubscriber;
 import jakarta.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
