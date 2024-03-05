@@ -134,6 +134,9 @@ export default createStore({
             }).catch((error) => {
                 console.log(error);
             });
+        },
+        PUSH_CHATLIST(state, chat) {
+            state.chatList.push(chat);
         }
     },
     getters: {

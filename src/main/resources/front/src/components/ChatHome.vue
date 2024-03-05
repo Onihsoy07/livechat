@@ -31,7 +31,7 @@
             <div>
                 <div v-for="(chat, idx) in data.searchChatList" :key="idx" class="chat-search-result-wrap">
                     <div class="search-chatname">{{ chat.chatName }}</div>
-                    <button class="chat-join-btn" @click="joinChat(chat.id)">참가</button>
+                    <button class="chat-join-btn" @click="joinChat(chat)">참가</button>
                 </div>
             </div>
         </div>
@@ -146,10 +146,10 @@ const searchChatName = () => {
         console.log(error);
     });
 };
-const joinChat = (chatId) => {
+const joinChat = (chat) => {
     axios({
         method: 'post',
-        url: '/api/chat/' + chatId, 
+        url: '/api/chat/' + chat.id, 
         headers: defaultJwtHeader
     }).then((res) => {
         console.log(res);
@@ -158,8 +158,8 @@ const joinChat = (chatId) => {
             data.searchChatName = '';
             data.setOpenChat = false;
             data.searchChatList = [];
-            store.commit('GET_MYCHATLIST');
-            store.commit('SET_CHATID', chatId);
+            store.commit('PUSH_CHATLIST', chat);
+            store.commit('SET_CHATID', chat.id);
         } else {
             alert(res.data.message);
         }
