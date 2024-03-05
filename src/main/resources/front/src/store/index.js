@@ -108,16 +108,11 @@ export default createStore({
         },
         LEAVE_CHAT(state, chatId) {
             state.currentChatId = null;
-            console.log(state.chatList);
-            console.log(chatId);
             for (const item of Object.entries(state.chatList)) {
-                console.log(item[1].chatName);
                 if (item[1].id === chatId) {
-                    state.chatList.removeItem(item);
-                    console.log('*********', item[1].chatName);
+                    state.chatList.splice(item[0], 1);
                 }
             }
-            console.log('after', state.chatList);
         },
         GET_MYCHATLIST(state) {
             axios({
