@@ -1,47 +1,30 @@
 <template>
     <div class="chat-collection-wrap">
         <div v-for="(chat, idx) in chatList" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
-            <div class="chat-name">{{ chat.chatName }}</div>
+            <div v-if="chat.id === currentChatId" class="chat-name chat-open">{{ chat.chatName }}</div>
+            <div v-else class="chat-name">{{ chat.chatName }}</div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, reactive } from 'vue';
-import axios from 'axios';
+import { computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 
 const store = useStore();
 const chatList = computed(() => store.state.chatList);
-const data = reactive({
-    chatCollection: [],
-});
+const currentChatId = computed(() => store.state.currentChatId);
 
 const openChat = (chatId) => {
-    console.log(chatId);
-    store.commit('SET_CHATID', chatId);
+    if (currentChatId.value != chatId) {
+        console.log(chatId);
+        store.commit('SET_CHATID', chatId);
+    }
 };
 
 onMounted(() => {
-    axios({
-        method: 'get',
-        url: '/api/chat/' + store.state.username,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-        }
-    }).then((res) => {
-        console.log(res);
-        if (res.data.success) {
-            data.chatCollection = res.data.data;
-            store.commit('SET_CHATLIST', res.data.data);
-        } else {
-            alert(res.data.message);
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
+    store.commit('GET_MYCHATLIST');
 });
 
 </script>
@@ -64,5 +47,8 @@ onMounted(() => {
 .chat-name:hover {
     background: #DCDCDC;
     cursor: pointer;
+}
+.chat-open {
+    background: #DCDCDC;
 }
 </style>
