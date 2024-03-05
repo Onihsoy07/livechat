@@ -338,7 +338,7 @@ const leaveChat = () => {
         console.log(res);
         if (res.data.success) {
             console.log(res.data.data);
-            ws.disconnect('', defaultJwtHeader);
+            ws.disconnect(null, defaultJwtHeader);
             store.commit('LEAVE_CHAT', props.chatId);
         } else {
             alert(res.data.message);

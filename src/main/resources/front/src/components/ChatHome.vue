@@ -158,6 +158,8 @@ const joinChat = (chatId) => {
             data.searchChatName = '';
             data.setOpenChat = false;
             data.searchChatList = [];
+            store.commit('GET_MYCHATLIST');
+            store.commit('SET_CHATID', chatId);
         } else {
             alert(res.data.message);
         }

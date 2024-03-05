@@ -10,6 +10,10 @@ const encodePayload = () => {
     return JSON.parse(payloead);
 }
 const tokenKeyName =  'token';
+const defaultJwtHeader = {
+    'Content-Type': 'application/json',
+    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+};
 
 export default createStore({
     state: {
@@ -76,15 +80,13 @@ export default createStore({
         },
         SET_CHATID(state, chatId) {
             console.log(chatId);
+            state.messageContentList = [];
             state.currentChatId = chatId;
 
             axios({
                 method: 'get',
                 url: '/api/message?chat-id=' + chatId, 
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-                }
+                headers: defaultJwtHeader,
             }).then((res) => {
                 console.log(res);
                 if (res.data.success) {
@@ -108,19 +110,31 @@ export default createStore({
             state.currentChatId = null;
             console.log(state.chatList);
             console.log(chatId);
-            console.log(state.chatList);
             for (const item of Object.entries(state.chatList)) {
                 console.log(item[1].chatName);
                 if (item[1].id === chatId) {
-                    state.chatList.removeItem(1);
+                    state.chatList.removeItem(item);
                     console.log('*********', item[1].chatName);
                 }
             }
             console.log('after', state.chatList);
         },
-        SET_CHATLIST(state, chatList) {
-            state.chatList = chatList;
-        },
+        GET_MYCHATLIST(state) {
+            axios({
+                method: 'get',
+                url: '/api/chat/' + state.username,
+                headers: defaultJwtHeader
+            }).then((res) => {
+                console.log(res);
+                if (res.data.success) {
+                    state.chatList = res.data.data;
+                } else {
+                    alert(res.data.message);
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
+        }
     },
     getters: {
 
