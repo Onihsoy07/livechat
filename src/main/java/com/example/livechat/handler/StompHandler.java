@@ -24,21 +24,24 @@ public class StompHandler implements ChannelInterceptor {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
         String authentication = String.valueOf(accessor.getNativeHeader("Authentication"));
+        Object nativeHeaders = accessor.getHeader("nativeHeaders");
 
+        // 웹소켓 연결이 끊긴 후 nativeHeaders가 존재하지 않아 Authentication 확인이 안됨(nativeHeaders가 없을 때 인증 검사 안함)
+        if (nativeHeaders != null) {
+            if (authentication.equals("null")) {
+                log.info("JWT 토큰이 존재하지 않습니다.");
+                throw new JwtUnAuthenticateException("JWT 토큰이 존재하지 않습니다.");
+            }
 
-        if (authentication.equals("null")) {
-            log.info("JWT 토큰이 존재하지 않습니다.");
-            throw new JwtUnAuthenticateException("JWT 토큰이 존재하지 않습니다.");
+            String jwtToken = authentication.substring(7);
+
+            if (!jwtProvider.validateToken(jwtToken)) {
+                log.info("JWT 토큰이 유효하지 않습니다. TOKEN : {}", jwtToken);
+                throw new JwtUnAuthenticateException("JWT 토큰이 유효하지 않습니다. TOKEN : " + jwtToken);
+            }
+
+            log.info("JWT TOKEN : {}", jwtToken);
         }
-
-        String jwtToken = authentication.substring(7);
-
-        if (!jwtProvider.validateToken(jwtToken)) {
-            log.info("JWT 토큰이 유효하지 않습니다. TOKEN : {}", jwtToken);
-            throw new JwtUnAuthenticateException("JWT 토큰이 유효하지 않습니다. TOKEN : " + jwtToken);
-        }
-
-        log.info("JWT TOKEN : {}", jwtToken);
 
         if(StompCommand.CONNECT.equals(accessor.getCommand())){
             log.info("CONNECT");
