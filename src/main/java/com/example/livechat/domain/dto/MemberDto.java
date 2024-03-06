@@ -1,15 +1,16 @@
 package com.example.livechat.domain.dto;
 
 import com.example.livechat.domain.entity.Member;
-import com.example.livechat.domain.enumerate.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDto {
+public class MemberDto implements Serializable {
 
     private Long id;
     private String username;

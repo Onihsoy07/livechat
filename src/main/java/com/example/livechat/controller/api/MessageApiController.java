@@ -51,9 +51,9 @@ public class MessageApiController {
 //    }
 
     @GetMapping
-    public HttpResponseDto<List<MessageDto>> getChatMessageList(@RequestParam("chat-id") final Long chatId,
+    public HttpResponseDto<List<MessagePushRedisDto>> getChatMessageList(@RequestParam("chat-id") final Long chatId,
                                                                 @CurrentMember Member member) {
-        List<MessageDto> messageList = messageService.getChatMessageList(chatId, member);
+        List<MessagePushRedisDto> messageList = messageService.getChatMessageList(chatId, member);
 
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);
     }

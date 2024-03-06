@@ -12,8 +12,11 @@ import com.example.livechat.exception.NotContainsUserChatException;
 import com.example.livechat.repository.AttachRepository;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +36,14 @@ public class MessageService {
     private final JwtProvider jwtProvider;
     private final RedisPublisher redisPublisher;
     private final ChannelTopic channelTopic;
+    private final RedisTemplate redisTemplate;
+    private static final String CHAT_ROOM = "CHAT_ROOM";
+    private HashOperations<String, String, List<MessagePushRedisDto>> opsHash;
+
+    @PostConstruct
+    private void init() {
+        opsHash = redisTemplate.opsForHash();
+    }
 
     public void messageResolver(MessageSaveDto messageSaveDto, String jwtToken) {
         Member sender = jwtProvider.getMember(jwtToken);
@@ -83,14 +94,22 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MessageDto> getChatMessageList(Long chatId, Member member) {
+    public List<MessagePushRedisDto> getChatMessageList(Long chatId, Member member) {
+        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId.toString());
+
+        if (messageDtoListInCache != null) {
+            return messageDtoListInCache;
+        }
+
         List<Message> messageList = messageRepository.findByMessageGroup_Id(chatId);
-        List<MessageDto> messageDtoList = new ArrayList<>();
+        List<MessagePushRedisDto> messageDtoList = new ArrayList<>();
 
         for (Message message : messageList) {
             message.viewMessage(member);
-            messageDtoList.add(new MessageDto(message));
+            messageDtoList.add(new MessagePushRedisDto(message));
         }
+
+        opsHash.put(CHAT_ROOM, chatId.toString(), messageDtoList);
 
         return messageDtoList;
     }

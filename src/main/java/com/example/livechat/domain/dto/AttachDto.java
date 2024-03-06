@@ -1,16 +1,16 @@
 package com.example.livechat.domain.dto;
 
 import com.example.livechat.domain.entity.Attach;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttachDto {
+public class AttachDto implements Serializable {
 
     private String uploadFileName;
 
