@@ -38,7 +38,7 @@ public class MessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private static final String CHAT_ROOM = "CHAT_ROOM";
-    private HashOperations<String, String, List<MessagePushRedisDto>> opsHash;
+    private HashOperations<String, Long, List<MessagePushRedisDto>> opsHash;
 
     @PostConstruct
     private void init() {
@@ -90,12 +90,17 @@ public class MessageService {
 
         redisPublisher.publisher(channelTopic, messagePushRedisDto);
 
+        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, messageSaveDto.getChatId());
+        List<MessagePushRedisDto> newMessageDtoList = new ArrayList<>(messageDtoListInCache);
+        newMessageDtoList.add(messagePushRedisDto);
+        opsHash.put(CHAT_ROOM, messageSaveDto.getChatId(), newMessageDtoList);
+
         return messagePushRedisDto;
     }
 
     @Transactional(readOnly = true)
     public List<MessagePushRedisDto> getChatMessageList(Long chatId, Member member) {
-        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId.toString());
+        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId);
 
         if (messageDtoListInCache != null) {
             return messageDtoListInCache;
@@ -109,7 +114,7 @@ public class MessageService {
             messageDtoList.add(new MessagePushRedisDto(message));
         }
 
-        opsHash.put(CHAT_ROOM, chatId.toString(), messageDtoList);
+        opsHash.put(CHAT_ROOM, chatId, messageDtoList);
 
         return messageDtoList;
     }
