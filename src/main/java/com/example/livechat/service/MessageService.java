@@ -91,7 +91,13 @@ public class MessageService {
         redisPublisher.publisher(channelTopic, messagePushRedisDto);
 
         List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, messageSaveDto.getChatId());
-        List<MessagePushRedisDto> newMessageDtoList = new ArrayList<>(messageDtoListInCache);
+        List<MessagePushRedisDto> newMessageDtoList;
+        if (messageDtoListInCache == null) {
+            newMessageDtoList = new ArrayList<>();
+        } else {
+            newMessageDtoList = new ArrayList<>(messageDtoListInCache);
+        }
+
         newMessageDtoList.add(messagePushRedisDto);
         opsHash.put(CHAT_ROOM, messageSaveDto.getChatId(), newMessageDtoList);
 
