@@ -114,6 +114,9 @@ const createChat = () => {
             data.isChatDetailOpen = false;
             data.chatName = '';
             data.setOpenChat = false;
+            const chat = res.data.data;
+            store.commit('PUSH_CHATLIST', chat);
+            store.commit('SET_CHATID', chat.id);
         } else {
             alert(res.data.message);
         }
