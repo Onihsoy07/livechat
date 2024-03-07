@@ -30,7 +30,7 @@ public class ChatApiController {
     private final MessageService messageService;
 
     @PostMapping
-    public HttpResponseDto<?> createChat(@RequestBody @Valid ChatSaveDto chatSaveDto,
+    public HttpResponseDto<ChatDto> createChat(@RequestBody @Valid ChatSaveDto chatSaveDto,
                                          BindingResult bindingResult,
                                          @CurrentMember Member member,
                                          @RequestHeader("Authentication") String token) {
@@ -44,7 +44,7 @@ public class ChatApiController {
 
         enterMessage(chat.getId(), member, token);
 
-        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", null);
+        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", new ChatDto(chat));
     }
 
     @GetMapping("/{username}")
