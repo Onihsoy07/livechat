@@ -36,8 +36,6 @@ public class ChatService {
     private Map<Long, ChannelTopic> topics;
     private HashOperations<String, String, Chat> opsHashChat;
     private HashOperations<String, String, String> opsHashEnterInfo;
-
-    private static final String CHAT_ROOMS = "CHAT_ROOM";
     public static final String ENTER_INFO = "ENTER_INFO";
 
 
@@ -90,10 +88,15 @@ public class ChatService {
         return chatDtoList;
     }
 
+    public void closeChat(Long chatId) {
+        Chat chat = getChatEntity(chatId);
+        chat.setClose();
+    }
+
     @Transactional(readOnly = true)
-    public Chat getChatEntity(Long id) {
-        return chatRepository.findById(id).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Chat ID : %d 로 찾을 수 없습니다.", id));
+    public Chat getChatEntity(Long chatId) {
+        return chatRepository.findById(chatId).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Chat ID : %d 로 찾을 수 없습니다.", chatId));
         });
     }
 

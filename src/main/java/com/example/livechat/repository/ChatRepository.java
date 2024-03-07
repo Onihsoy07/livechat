@@ -10,8 +10,9 @@ import java.util.List;
 public interface ChatRepository extends JpaRepository<Chat, Long> {
 
     @Query("select c from Chat c " +
-            "where c.chatName like concat('%', :chatName, '%')" +
-            "and c.isOpenChat = true")
+            "where c.chatName like concat('%', :chatName, '%') " +
+            "and c.isOpenChat = true " +
+            "and c.isUseable = true")
     List<Chat> findByChatNameContaining(@Param("chatName") String chatName);
 
 }

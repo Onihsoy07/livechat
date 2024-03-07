@@ -7,6 +7,7 @@ import com.example.livechat.domain.entity.Member;
 import com.example.livechat.domain.entity.MemberChat;
 import com.example.livechat.domain.entity.Message;
 import com.example.livechat.domain.enumerate.MessageType;
+import com.example.livechat.repository.ChatRepository;
 import com.example.livechat.repository.MemberChatRepository;
 import com.example.livechat.repository.MemberRepository;
 import com.example.livechat.repository.MessageRepository;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class MemberChatService {
 
     private final MemberChatRepository memberChatRepository;
+    private final ChatService chatService;
     private final MemberService memberService;
 
     public void createMemberMessageGroup(Long memberId, Chat chat) {
@@ -60,6 +62,11 @@ public class MemberChatService {
 
     public void leaveChat(Long chatId, Long memberId) {
         memberChatRepository.leaveChat(chatId, memberId);
+        List<MemberChat> membersInChat = memberChatRepository.findByChat_Id(chatId);
+
+        if (membersInChat.size() == 0) {
+            chatService.closeChat(chatId);
+        }
     }
 
 

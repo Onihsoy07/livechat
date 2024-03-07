@@ -27,10 +27,22 @@ public class Chat extends Base implements Serializable {
     @Column(nullable = false, unique = false)
     private Boolean isOpenChat;
 
+    @Column(nullable = false, unique = false)
+    private Boolean isUseable;
+
     @Builder
     public Chat(String chatName, Boolean isOpenChat) {
         this.chatName = chatName;
         this.isOpenChat = isOpenChat;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.isUseable = true;
+    }
+
+    public void setClose() {
+        this.isUseable = false;
     }
 
 }
