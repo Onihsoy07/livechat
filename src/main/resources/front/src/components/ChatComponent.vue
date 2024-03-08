@@ -117,7 +117,7 @@ import SockJS from "sockjs-client";
 import axios from "axios";
 
 
-const sock = new SockJS("http://localhost:8080/ws/chat");
+const sock = new SockJS("http://localhost:8080/ws/chats");
 const ws = Stomp.over(sock);
 
 const store = useStore();
@@ -163,7 +163,7 @@ const connect = () => {
         frame => {
             console.log('소켓 연결 성공', frame);
             ws.subscribe(
-                "/sub/chat/" + props.chatId,
+                "/sub/chats/" + props.chatId,
                 res => {
                     console.log('구독으로 받은 메시지 입니다.', res);
                     console.log('body', res.body);
@@ -192,7 +192,7 @@ const sendMessage = () => {
             messageType: 'MESSAGE'
         });
         console.log(body);
-        ws.send("/pub/api/message", body, defaultJwtHeader);
+        ws.send("/pub/api/messages", body, defaultJwtHeader);
     }
 
     data.message = '';
@@ -311,7 +311,7 @@ const searchUsername = () => {
 const inviteMember = (memberId, username) => {
     axios({
         method: 'post',
-        url: '/api/chat/' + props.chatId, 
+        url: '/api/chats/' + props.chatId, 
         data: JSON.stringify({
             memberId: memberId,
             username: username
@@ -332,7 +332,7 @@ const inviteMember = (memberId, username) => {
 const leaveChat = () => {
     axios({
         method: 'delete',
-        url: '/api/chat/' + props.chatId,
+        url: '/api/chats/' + props.chatId,
         headers: defaultJsonJwtHeader,
     }).then((res) => {
         console.log(res);

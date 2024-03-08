@@ -2,7 +2,10 @@ import { createStore } from "vuex";
 import axios from "axios";
 
 const encodePayload = () => {
-    const token = window.localStorage.getItem(tokenKeyName);
+    let token = window.localStorage.getItem(tokenKeyName);
+    if (token === null) {
+        token = jwtToken;
+    }
 
     const encodingPayload = token.split('.')[1];
     const payloead = window.atob(encodingPayload);
@@ -10,10 +13,7 @@ const encodePayload = () => {
     return JSON.parse(payloead);
 }
 const tokenKeyName =  'token';
-const defaultJwtHeader = {
-    'Content-Type': 'application/json',
-    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
-};
+let jwtToken = '';
 
 export default createStore({
     state: {
@@ -28,6 +28,7 @@ export default createStore({
         LOGIN_CHECK(state) {
             console.log('login check', state.isLogin);
             console.log('state.username', state.username);
+            console.log(window.localStorage);
             if (state.isLogin) {
                 return;
             }
@@ -62,7 +63,8 @@ export default createStore({
                 console.log(error);
             });
         },
-        SET_LOGIN(state) {
+        SET_LOGIN(state, jwt) {
+            jwtToken = jwt;
             const payloead = encodePayload();
             state.isLogin = true;
             state.username = payloead.sub;
@@ -85,8 +87,11 @@ export default createStore({
 
             axios({
                 method: 'get',
-                url: '/api/message?chat-id=' + chatId, 
-                headers: defaultJwtHeader,
+                url: '/api/chats/' + chatId + '/messages', 
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+                },
             }).then((res) => {
                 console.log(res);
                 if (res.data.success) {
@@ -117,8 +122,11 @@ export default createStore({
         GET_MYCHATLIST(state) {
             axios({
                 method: 'get',
-                url: '/api/chat/' + state.username,
-                headers: defaultJwtHeader
+                url: '/api/members/' + state.username + '/chats',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+                }
             }).then((res) => {
                 console.log(res);
                 if (res.data.success) {

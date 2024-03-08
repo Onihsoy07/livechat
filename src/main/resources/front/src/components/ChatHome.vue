@@ -102,7 +102,7 @@ const createChat = () => {
 
     axios({
         method: 'post',
-        url: '/api/chat', 
+        url: '/api/chats', 
         data: JSON.stringify({
             chatName: data.chatName,
             isOpenChat: data.setOpenChat,
@@ -136,7 +136,7 @@ const searchChatName = () => {
     data.searchChatList = [];
     axios({
         method: 'get',
-        url: '/api/chat?name=' + data.searchChatName, 
+        url: '/api/chats?name=' + data.searchChatName, 
         headers: defaultJwtHeader
     }).then((res) => {
         console.log(res);
@@ -152,7 +152,7 @@ const searchChatName = () => {
 const joinChat = (chat) => {
     axios({
         method: 'post',
-        url: '/api/chat/' + chat.id, 
+        url: '/api/chats/' + chat.id, 
         headers: defaultJwtHeader
     }).then((res) => {
         console.log(res);

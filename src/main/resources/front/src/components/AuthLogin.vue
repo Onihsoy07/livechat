@@ -34,7 +34,7 @@ const login = () => {
         if (res.data.success) {
             console.log(res);
             window.localStorage.setItem('token', res.data.data.token);
-            store.commit('SET_LOGIN');
+            store.commit('SET_LOGIN', res.data.data.token);
             router.push('/');
         } else {
             console.log(res.data);
