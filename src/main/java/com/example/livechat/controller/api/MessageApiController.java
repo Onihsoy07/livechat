@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/message")
+@RequestMapping("/api")
 public class MessageApiController {
 
     private final MessageService messageService;
@@ -50,9 +50,9 @@ public class MessageApiController {
 //        return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "메시지 생성 성공", null);
 //    }
 
-    @GetMapping
-    public HttpResponseDto<List<MessagePushRedisDto>> getChatMessageList(@RequestParam("chat-id") final Long chatId,
-                                                                @CurrentMember Member member) {
+    @GetMapping("/chats/{chatId}/messages")
+    public HttpResponseDto<List<MessagePushRedisDto>> getChatMessageList(@PathVariable("chatId") final Long chatId,
+                                                                         @CurrentMember Member member) {
         List<MessagePushRedisDto> messageList = messageService.getChatMessageList(chatId, member);
 
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);

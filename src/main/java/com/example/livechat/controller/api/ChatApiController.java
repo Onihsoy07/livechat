@@ -22,14 +22,14 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/chat")
+@RequestMapping("/api")
 public class ChatApiController {
 
     private final ChatService chatService;
     private final MemberChatService memberChatService;
     private final MessageService messageService;
 
-    @PostMapping
+    @PostMapping("/chats")
     public HttpResponseDto<ChatDto> createChat(@RequestBody @Valid ChatSaveDto chatSaveDto,
                                          BindingResult bindingResult,
                                          @CurrentMember Member member,
@@ -47,7 +47,7 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "생성 성공", new ChatDto(chat));
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/members/{username}/chats")
     public HttpResponseDto<List<ChatDto>> getMyMessageGroupList(@PathVariable("username") String username,
                                                                 @CurrentMember Member member) {
         if (!member.getUsername().equals(username)) {
@@ -59,7 +59,7 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "내 대화방 목록 로드", myMessageGroupList);
     }
 
-    @GetMapping
+    @GetMapping("/chats")
     public HttpResponseDto<List<ChatDto>> searchChatName(@RequestParam("name") String chatName) {
         List<ChatDto> messageGroupList = chatService.searchChatName(chatName);
 
@@ -70,7 +70,7 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 찾기 성공", messageGroupList);
     }
 
-    @PostMapping("/{chatId}")
+    @PostMapping("/chats/{chatId}")
     public HttpResponseDto<?> joinChat(@PathVariable("chatId") Long chatId,
                                        @RequestBody(required = false) final MemberInviteDto memberInviteDto,
                                        @CurrentMember Member member,
@@ -98,7 +98,7 @@ public class ChatApiController {
         return new HttpResponseDto<>(HttpStatus.CREATED.value(), true, "대화방 참가", null);
     }
 
-    @DeleteMapping("/{chatId}")
+    @DeleteMapping("/chats/{chatId}")
     public HttpResponseDto<Null> leaveChat(@PathVariable("chatId") final Long chatId,
                                            @CurrentMember final Member member,
                                            @RequestHeader("Authentication") String token) {

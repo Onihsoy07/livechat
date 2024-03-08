@@ -24,7 +24,7 @@ import java.util.Enumeration;
 public class SocketController {
 
     private final MessageService messageService;
-    private final RedisPublisher redisPublisher;
+//    private final RedisPublisher redisPublisher;
 
 //    @MessageMapping("/api/chat/{chatId}")
 //    @SendTo("/send")
@@ -40,7 +40,7 @@ public class SocketController {
 //        return messagePushRedisDto;
 //    }
 
-    @MessageMapping("/api/message")
+    @MessageMapping("/api/messages")
     public MessageSaveDto sendMessage(MessageSaveDto messageSaveDto,
                                       @Header("Authentication") String token) {
 //        Long chatId = messageSaveDto.getChatId();
