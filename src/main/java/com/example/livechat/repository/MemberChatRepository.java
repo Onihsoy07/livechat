@@ -16,7 +16,7 @@ public interface MemberChatRepository extends JpaRepository<MemberChat, Long> {
 
     Optional<MemberChat> findByMember_IdAndChat_id(Long memberId, Long chatId);
 
-    @Modifying
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("delete from MemberChat mc where mc.chat.id = :chatId and mc.member.id = :memberId")
     void leaveChat(@Param("chatId") Long chatId, @Param("memberId") Long memberId);
 
