@@ -13,16 +13,20 @@ import com.example.livechat.repository.AttachRepository;
 import com.example.livechat.repository.MessageRepository;
 import com.example.livechat.service.redis.RedisPublisher;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Source;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -38,11 +42,14 @@ public class MessageService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private static final String CHAT_ROOM = "CHAT_ROOM";
+    private static final long DURATION_TIME = 3600;
     private HashOperations<String, Long, List<MessagePushRedisDto>> opsHash;
+    private ValueOperations<String, List<MessagePushRedisDto>> opsValue;
 
     @PostConstruct
     private void init() {
         opsHash = redisTemplate.opsForHash();
+        opsValue = redisTemplate.opsForValue();
     }
 
     public void messageResolver(MessageSaveDto messageSaveDto, String jwtToken) {
@@ -90,7 +97,8 @@ public class MessageService {
 
         redisPublisher.publisher(channelTopic, messagePushRedisDto);
 
-        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, messageSaveDto.getChatId());
+//        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, messageSaveDto.getChatId());
+        List<MessagePushRedisDto> messageDtoListInCache = opsValue.get(messageSaveDto.getChatId() + "");
         List<MessagePushRedisDto> newMessageDtoList;
         if (messageDtoListInCache == null) {
             newMessageDtoList = new ArrayList<>();
@@ -99,14 +107,16 @@ public class MessageService {
         }
 
         newMessageDtoList.add(messagePushRedisDto);
-        opsHash.put(CHAT_ROOM, messageSaveDto.getChatId(), newMessageDtoList);
+//        opsHash.put(CHAT_ROOM, messageSaveDto.getChatId(), newMessageDtoList);
+        opsValue.set(messageSaveDto.getChatId() + "", newMessageDtoList, DURATION_TIME, TimeUnit.SECONDS);
 
         return messagePushRedisDto;
     }
 
     @Transactional(readOnly = true)
     public List<MessagePushRedisDto> getChatMessageList(Long chatId, Member member) {
-        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId);
+//        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId);
+        List<MessagePushRedisDto> messageDtoListInCache = opsValue.get(chatId + "");
 
         if (messageDtoListInCache != null) {
             return messageDtoListInCache;
@@ -120,7 +130,8 @@ public class MessageService {
             messageDtoList.add(new MessagePushRedisDto(message));
         }
 
-        opsHash.put(CHAT_ROOM, chatId, messageDtoList);
+//        opsHash.put(CHAT_ROOM, chatId, messageDtoList);
+        opsValue.set(chatId + "", messageDtoList, DURATION_TIME, TimeUnit.SECONDS);
 
         return messageDtoList;
     }
