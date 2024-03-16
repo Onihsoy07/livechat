@@ -60,13 +60,13 @@ import ChatComponent from './ChatComponent.vue';
 const store = useStore();
 const chatId = computed(() => store.state.currentChatId);
 
-watch(chatId, (newVal) => {
+watch(chatId, (newVal, oldVal) => {
     if (newVal == null) {
         data.chatComponentKey = 0;
         return;
+    } else if (oldVal != null) {
+        store.commit("SET_ISCHATCHANGE", true);
     }
-
-    store.commit("SET_ISCHATCHANGE", true);
     data.chatComponentKey = 0;
     setTimeout(() => {
         data.chatComponentKey++;
