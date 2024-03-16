@@ -1,6 +1,9 @@
 <template>
     <div class="chat-collection-wrap">
-        <div v-for="(chat, idx) in chatList" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
+        <div v-if="chatList.length == 0" class="chat-zero-alert">
+            대화방이 없습니다.
+        </div>
+        <div v-else v-for="(chat, idx) in chatList" :key="idx" class="chat-room-wrap" @click="openChat(chat.id)">
             <div v-if="chat.id === currentChatId" class="chat-name chat-open">{{ chat.chatName }}</div>
             <div v-else class="chat-name">{{ chat.chatName }}</div>
         </div>
@@ -50,5 +53,9 @@ onMounted(() => {
 }
 .chat-open {
     background: #DCDCDC;
+}
+.chat-zero-alert {
+    height: 50px;
+    line-height: 50px;
 }
 </style>

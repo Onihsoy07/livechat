@@ -21,7 +21,7 @@ export default createStore({
         username: '',
         currentChatId: null,
         messageContentList: [],
-        chatList: null,
+        chatList: [],
         isChatChange: false,
     },
     mutations: {
