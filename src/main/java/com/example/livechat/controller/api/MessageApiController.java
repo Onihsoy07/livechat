@@ -52,8 +52,9 @@ public class MessageApiController {
 
     @GetMapping("/chats/{chatId}/messages")
     public HttpResponseDto<List<MessagePushRedisDto>> getChatMessageList(@PathVariable("chatId") final Long chatId,
-                                                                         @CurrentMember Member member) {
-        List<MessagePushRedisDto> messageList = messageService.getChatMessageList(chatId, member);
+                                                                         @CurrentMember Member member,
+                                                                         @RequestParam(name = "open-message", required = false, defaultValue = "0") final int openMessage) {
+        List<MessagePushRedisDto> messageList = messageService.getChatMessageList(chatId, member, openMessage);
 
         return new HttpResponseDto<>(HttpStatus.OK.value(), true, "대화방 메시지 로드 성공", messageList);
     }

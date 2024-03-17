@@ -39,6 +39,7 @@ public class MessageService {
     private final RedisTemplate redisTemplate;
     private static final String CHAT_ROOM = "CHAT_ROOM";
     private static final long DURATION_TIME = 3600;
+    private static final int PAGE_SIZE = 20;
     private HashOperations<String, Long, List<MessagePushRedisDto>> opsHash;
     private ValueOperations<String, List<MessagePushRedisDto>> opsValue;
 
@@ -112,13 +113,13 @@ public class MessageService {
     }
 
     @Transactional(readOnly = true)
-    public List<MessagePushRedisDto> getChatMessageList(Long chatId, Member member) {
+    public List<MessagePushRedisDto> getChatMessageList(Long chatId, Member member, int openMessage) {
 //        List<MessagePushRedisDto> messageDtoListInCache = opsHash.get(CHAT_ROOM, chatId);
 //        List<MessagePushRedisDto> messageDtoListInCache = opsList.range(chatId + "", 0, -1);
         List<MessagePushRedisDto> messageDtoListInCache = opsValue.get(chatId + "");
 
         if (messageDtoListInCache != null) {
-            return messageDtoListInCache;
+            return getMessagePage(messageDtoListInCache, openMessage);
         }
 
         List<Message> messageList = messageRepository.findByMessageGroup_Id(chatId);
@@ -133,7 +134,20 @@ public class MessageService {
 //        opsList.rightPushAll(chatId + "", messageDtoList);
         opsValue.set(chatId + "", messageDtoList, DURATION_TIME, TimeUnit.SECONDS);
 
-        return messageDtoList;
+        List<MessagePushRedisDto> messagePushRedisDtoList = getMessagePage(messageDtoList, openMessage);
+
+        return messagePushRedisDtoList;
+    }
+
+    private List<MessagePushRedisDto> getMessagePage(List<MessagePushRedisDto> messagePushRedisDtoList, int openMessage) {
+        int startIndex = (messagePushRedisDtoList.size() - openMessage) - PAGE_SIZE;
+        if (startIndex + PAGE_SIZE < 0) {
+            return null;
+        } else if (startIndex < 0) {
+            return messagePushRedisDtoList.subList(0, startIndex + PAGE_SIZE);
+        }
+
+        return messagePushRedisDtoList.subList(startIndex, startIndex + PAGE_SIZE);
     }
 
 }
