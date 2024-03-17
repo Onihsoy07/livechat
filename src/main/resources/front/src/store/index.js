@@ -140,6 +140,9 @@ export default createStore({
         },
         PUSH_CHATLIST(state, chat) {
             state.chatList.push(chat);
+        },
+        ADD_MESSAGELIST(state, addMessageList) {
+            state.messageContentList = addMessageList.concat(state.messageContentList);
         }
     },
     getters: {

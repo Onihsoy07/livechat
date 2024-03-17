@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div class="chat-contents-wrap" ref="messageWrap">
+        <div class="chat-contents-wrap" ref="messageWrap" @scroll="openOldMessage()">
             <div class="chat-contents" v-for="(messageData, idx) in messageContentList" :key="idx">
 
                 <div v-if="messageData.messageType === 'ENTER'" class="enter-message-wrap">
@@ -130,11 +130,16 @@ const props = defineProps({
 });
 const data = reactive({
     initCheck: true,
+    newMyMessage: false,
     newMessageCheck: false,
     message: '',
     isInviteWinOpen: false,
     inviteUsername: '',
     memberSearchResult: null,
+    openMessage: 20,
+    messageOpenLoad: false,
+    beforeScrollHeight: 0,
+    isMessageTop: false,
 });
 
 const username = computed(() => store.state.username);
@@ -165,10 +170,15 @@ const connect = () => {
             ws.subscribe(
                 "/sub/chats/" + props.chatId,
                 res => {
+                    let parseBody = JSON.parse(res.body);
                     console.log('구독으로 받은 메시지 입니다.', res);
-                    console.log('body', res.body);
-                    messageContentList.value.push(JSON.parse(res.body));
+                    console.log('body', parseBody);
+                    messageContentList.value.push(parseBody);
+                    data.openMessage += 1;
                     data.newMessageCheck = true;
+                    if (username.value == parseBody.sender.username) {
+                        data.newMyMessage = true;
+                    }
                 },
                 defaultJwtHeader
             );
@@ -268,7 +278,10 @@ const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
 };
 const isMessageWrapScrollBottom = () => {
-    return messageWrap.value.scrollTop === messageWrap.value.scrollHeight;
+    return messageWrap.value.scrollTop >= (messageWrap.value.scrollHeight - 450);
+};
+const isMessageWrapScrollTop = () => {
+    return messageWrap.value.scrollTop <= 5;
 };
 // content-disposition에서 파일이름 추출
 const extractDownloadFilename = (response) => {
@@ -287,7 +300,7 @@ const closeInviteDetail = () => {
     data.isInviteWinOpen = false;
     data.inviteUsername = '';
     data.memberSearchResult = null;
-}
+};
 const searchUsername = () => {
     data.memberSearchResult = null;
     axios({
@@ -307,7 +320,7 @@ const searchUsername = () => {
     }).catch((error) => {
         console.log(error);
     });
-}
+};
 const inviteMember = (memberId, username) => {
     axios({
         method: 'post',
@@ -328,7 +341,7 @@ const inviteMember = (memberId, username) => {
     }).catch((error) => {
         console.log(error);
     });
-}
+};
 const leaveChat = () => {
     axios({
         method: 'delete',
@@ -346,7 +359,36 @@ const leaveChat = () => {
     }).catch((error) => {
         console.log(error);
     });
-}
+};
+const openOldMessage = () => {
+    console.log(messageWrap.value.scrollTop, messageWrap.value.scrollHeight);
+    if (isMessageWrapScrollTop() && !data.messageOpenLoad) {
+        data.messageOpenLoad = true;
+        data.beforeScrollHeight = messageWrap.value.scrollHeight;
+
+        axios({
+            method: 'get',
+            url: '/api/chats/' + props.chatId + '/messages?open-message=' + data.openMessage, 
+            headers: defaultJsonJwtHeader
+        }).then((res) => {
+            console.log(res);
+            if (res.data.success) {
+                if (res.data.data == null) {
+                    data.isMessageTop = true;
+                }
+                console.log(res.data.data);
+                store.commit('ADD_MESSAGELIST', res.data.data);
+                data.openMessage += 20;
+                return;
+            } else {
+                return;
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+};
+
 
 
 
@@ -359,12 +401,15 @@ onUpdated(() => {
         messageWrapScrollDown();
         data.initCheck = false;
     }
-    if (data.newMessageCheck) {
-        messageWrapScrollDown();
+    if (data.newMessageCheck && (isMessageWrapScrollBottom() || data.newMyMessage)) {
         data.newMessageCheck = false;
+        data.newMyMessage = false;
+        messageWrapScrollDown();
     }
-
-    isMessageWrapScrollBottom();
+    if (data.messageOpenLoad && !data.isMessageTop) {
+        messageWrap.value.scrollTop = messageWrap.value.scrollHeight - data.beforeScrollHeight;
+        data.messageOpenLoad = false;
+    }
 });
 onUnmounted(() => {
     ws.disconnect(null, defaultJwtHeader);
