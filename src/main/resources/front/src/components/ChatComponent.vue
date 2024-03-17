@@ -93,7 +93,6 @@
                     </div>
 
                 </div>
-
             </div>
         </div>
         <div class="message-box-wrap">
@@ -104,6 +103,9 @@
                 <button @click="inviteWinOpen">초대</button>
                 <button @click="leaveChat">나가기</button>
                 <input class="file-input" type="file" ref="fileMessage" @change="sendFile()" />
+            </div>
+            <div v-if="data.newMessageScrollDownAlert" class="newMessageAlert" @click="messageWrapScrollDown">
+                새 메시지로 이동
             </div>
         </div>
     </div>
@@ -130,7 +132,7 @@ const props = defineProps({
 });
 const data = reactive({
     initCheck: true,
-    newMyMessage: false,
+    newMessageType: null,
     newMessageCheck: false,
     message: '',
     isInviteWinOpen: false,
@@ -140,6 +142,7 @@ const data = reactive({
     messageOpenLoad: false,
     beforeScrollHeight: 0,
     isMessageTop: false,
+    newMessageScrollDownAlert: false,
 });
 
 const username = computed(() => store.state.username);
@@ -177,7 +180,9 @@ const connect = () => {
                     data.openMessage += 1;
                     data.newMessageCheck = true;
                     if (username.value == parseBody.sender.username) {
-                        data.newMyMessage = true;
+                        data.newMessageType = 'my';
+                    } else {
+                        data.newMessageType = 'other';
                     }
                 },
                 defaultJwtHeader
@@ -276,6 +281,7 @@ const downloadFile = (fileName) => {
 };
 const messageWrapScrollDown = () => {
     messageWrap.value.scrollTop = messageWrap.value.scrollHeight;
+    data.newMessageScrollDownAlert = false;
 };
 const isMessageWrapScrollBottom = () => {
     return messageWrap.value.scrollTop >= (messageWrap.value.scrollHeight - 450);
@@ -386,6 +392,8 @@ const openOldMessage = () => {
         }).catch((error) => {
             console.log(error);
         });
+    } else if(isMessageWrapScrollBottom()) {
+        data.newMessageScrollDownAlert = false;
     }
 };
 
@@ -401,10 +409,13 @@ onUpdated(() => {
         messageWrapScrollDown();
         data.initCheck = false;
     }
-    if (data.newMessageCheck && (isMessageWrapScrollBottom() || data.newMyMessage)) {
+    if (data.newMessageCheck && (isMessageWrapScrollBottom() || data.newMessageType == 'my')) {
         data.newMessageCheck = false;
-        data.newMyMessage = false;
+        data.newMessageType = null;
         messageWrapScrollDown();
+    }
+    if (data.newMessageCheck && !isMessageWrapScrollBottom() && data.newMessageType == 'other') {
+        data.newMessageScrollDownAlert = true;
     }
     if (data.messageOpenLoad && !data.isMessageTop) {
         messageWrap.value.scrollTop = messageWrap.value.scrollHeight - data.beforeScrollHeight;
@@ -545,5 +556,19 @@ onUnmounted(() => {
 }
 .chat-search-result-wrap div {
     margin-right: 5px;
+}
+.newMessageAlert {
+    position: relative;
+    top: -128px;
+    width: 50%;
+    height: 25px;
+    line-height: 27px;
+    margin: 0 auto;
+    border: solid 1px black;
+    border-radius: 10px;
+    background-color: white;
+}
+.newMessageAlert:hover {
+    cursor: pointer;
 }
 </style>
