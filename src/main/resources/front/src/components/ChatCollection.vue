@@ -26,10 +26,19 @@ const openChat = (chatId) => {
     }
 };
 
-onMounted(() => {
+async function loginCheck() {
+    store.commit('LOGIN_CHECK');
+    return;
+}
+async function init() {
+    await loginCheck();
     store.commit('GET_MYCHATLIST');
-});
+}
 
+onMounted(() => {
+    init();
+    // store.commit('GET_MYCHATLIST');
+});
 </script>
 
 <style scoped>

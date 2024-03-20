@@ -5,6 +5,8 @@ const encodePayload = () => {
     let token = window.localStorage.getItem(tokenKeyName);
     if (token === null) {
         token = jwtToken;
+    } else {
+        jwtToken = token;
     }
 
     const encodingPayload = token.split('.')[1];
@@ -30,6 +32,7 @@ export default createStore({
             console.log('state.username', state.username);
             console.log(window.localStorage);
             if (state.isLogin) {
+                encodePayload();
                 return;
             }
 
@@ -125,7 +128,8 @@ export default createStore({
                 url: '/api/members/' + state.username + '/chats',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authentication': 'Bearer ' + window.localStorage.getItem('token')
+                    'Authentication': 'Bearer ' + jwtToken
+                    // window.localStorage.getItem('token')
                 }
             }).then((res) => {
                 console.log(res);
