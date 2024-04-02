@@ -3,7 +3,7 @@
 
 
 ## 개발 기간
-- 2024.01.21 ~ 진행중
+- 2024.01.21 ~ 2024.03.21
 
 
 ## 멤버구성
@@ -55,6 +55,10 @@
 # 웹 사이트 화면
 
 ![ezgif-4-8a6eb2e50d](https://github.com/Onihsoy07/livechat/assets/84126411/d0908be9-ec5b-4632-9815-bf6c0eb04305)
+
+<br>
+
+<image src="https://github.com/Onihsoy07/livechat/assets/84126411/1a726bf8-d673-4762-a731-5f75353efe6e">
 
 
 
